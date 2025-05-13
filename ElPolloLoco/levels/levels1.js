@@ -1,5 +1,12 @@
+/**
+ * Main level configuration for the game
+ * @type {Level}
+ */
 let level1;
 
+/**
+ * Initializes the game level with enemies, clouds, background, coins and bottles
+ */
 function initLevel() {
     level1 = new Level(
         createEnemyCharacters(),
@@ -10,6 +17,10 @@ function initLevel() {
     );
 }
 
+/**
+ * Creates the enemy characters for the level
+ * @returns {Array} Array of enemy objects
+ */
 function createEnemyCharacters() {
     return [
         new Chicken(400),
@@ -22,6 +33,10 @@ function createEnemyCharacters() {
     ];
 }
 
+/**
+ * Creates cloud objects for the background
+ * @returns {Array} Array of cloud objects
+ */
 function createCloudObjects() {
     return [
         new Cloud(500),
@@ -30,6 +45,10 @@ function createCloudObjects() {
     ];
 }
 
+/**
+ * Creates all background layers for the level
+ * @returns {Array} Array of background objects
+ */
 function createBackgroundLayers() {
     return [
         ...createLayerSet(-719, '2'),
@@ -40,6 +59,12 @@ function createBackgroundLayers() {
     ];
 }
 
+/**
+ * Creates a set of background layers at a specific position
+ * @param {number} position - X position for the layer set
+ * @param {string} variant - Variant of the background layer ('1' or '2')
+ * @returns {Array} Array of background objects for a single position
+ */
 function createLayerSet(position, variant) {
     return [
         new BackgroundObject('img/5_background/layers/air.png', position),
@@ -49,6 +74,10 @@ function createLayerSet(position, variant) {
     ];
 }
 
+/**
+ * Creates collectible coins for the level
+ * @returns {Array} Array of coin objects
+ */
 function createCoinCollectibles() {
     return [
         new Coin(200),
@@ -61,6 +90,10 @@ function createCoinCollectibles() {
     ];
 }
 
+/**
+ * Creates collectible bottles for the level
+ * @returns {Array} Array of bottle objects
+ */
 function createBottleCollectibles() {
     return [
         new Bottle(500),

@@ -6,21 +6,18 @@
 /**
  * Flag indicating whether the control menu is currently open
  * @type {boolean}
- * @default false
  */
 let control = false;
 
 /**
  * Flag indicating whether music should be played
  * @type {boolean}
- * @default true
  */
 let playMusic = true;
 
 /**
  * Flag indicating whether the game has been started
  * @type {boolean}
- * @default false
  */
 let gameStarted = false;
 
@@ -34,14 +31,12 @@ gameMusic.volume = 0.3;
 /**
  * Flag indicating whether the game is in fullscreen mode
  * @type {boolean}
- * @default false
  */
 let fullscreenMode = false;
 
 /**
  * Global flag to enable/disable all sound effects in the game
  * @type {boolean}
- * @default true
  * @global
  */
 window.SOUNDS_ENABLED = true;
@@ -104,9 +99,8 @@ function startGame() {
  * Event handler for fullscreen change detection
  * Handles UI updates when exiting fullscreen mode
  */
-function fullscreenchanged () {
+function fullscreenchanged() {
   if (document.fullscreenElement == null) {
-    let fullscreenCont = document.getElementById('canvas-cont');
     closeFullCanvas();
     closeFullNav();
     fullscreenMode = false;
@@ -133,12 +127,9 @@ function showGame() {
 function showResponsiveBtn() {
   let mobileControl = document.getElementById('mobile-cont');
   
-  // Show controls on small height screens (phones in landscape)
   if (window.innerHeight < 480 && gameStarted) {
     mobileControl.classList.remove('d-none');
-  } 
-  // Show controls on tablet devices (based on width or touch capability)
-  else if (gameStarted && (window.innerWidth <= 1024 || isTabletDevice())) {
+  } else if (gameStarted && (window.innerWidth <= 1024 || isTabletDevice())) {
     mobileControl.classList.remove('d-none');
   }
 }
@@ -148,22 +139,8 @@ function showResponsiveBtn() {
  * @returns {boolean} True if the device is a tablet
  */
 function isTabletDevice() {
-  // Check for touch capability
   const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  
-  /**
-   * Checks if the device has screen dimensions typical for tablets
-   * @type {boolean}
-   * @private
-   */
   const tabletSized = window.innerWidth >= 600 && window.innerWidth <= 1024;
-  
-  /**
-   * Checks if the user agent string matches common tablet identifiers
-   * Note: User agent detection is not fully reliable but used as a fallback
-   * @type {boolean}
-   * @private
-   */
   const tabletUA = /iPad|Android(?!.*Mobile)|Tablet/i.test(navigator.userAgent);
   
   return hasTouch && (tabletSized || tabletUA);
@@ -171,7 +148,6 @@ function isTabletDevice() {
 
 /**
  * Plays background music if audio is enabled in game settings
- * @returns {void}
  */
 function checkPlayMusic() {
   if (playMusic) {
@@ -181,8 +157,6 @@ function checkPlayMusic() {
 
 /**
  * Toggles the visibility of the controls instructions panel
- * Updates the control state flag to track panel visibility
- * @returns {void}
  */
 function toggleControlsInstructions() {
   let controlMenu = document.getElementById('game-controls-instructions');
@@ -198,7 +172,6 @@ function toggleControlsInstructions() {
 /**
  * Toggles game sound on/off and updates the UI accordingly
  * Saves the user's preference to localStorage for persistence between sessions
- * @returns {void}
  */
 function muteSound() {
   let mute = document.getElementById('mute');
@@ -272,7 +245,7 @@ function setFullscreen() {
     showNavinFull();
     fullscreenMode = true;
   } else {
-    exitFullscreen(fullscreenCont);
+    exitFullscreen();
     closeFullCanvas();
     closeFullNav();
     fullscreenMode = false;
@@ -290,12 +263,11 @@ function closeFullCanvas() {
   if (screen.height < 480) {
     canvasCont.style.maxWidth = '560px';
     canvasCont.style.maxHeight = '400px';
-  }else{
+  } else {
     canvasCont.style.maxWidth = '720px';
     canvasCont.style.maxHeight = '480px';
   }
   canvas.style.height = '480px';
-
   headline.classList.remove('d-none');
 }
 
