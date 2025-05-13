@@ -7,6 +7,37 @@ let fullscreenMode = false;
 
 window.SOUNDS_ENABLED = true;
 
+document.addEventListener('DOMContentLoaded', function() {
+    loadSoundPreference();
+});
+
+function loadSoundPreference() {
+    const soundState = localStorage.getItem('soundsEnabled');
+    
+    if (soundState === 'false') {
+        playMusic = false;
+        window.SOUNDS_ENABLED = false;
+        updateMuteButtonsDisplay(true);
+    } else {
+        playMusic = true;
+        window.SOUNDS_ENABLED = true;
+        updateMuteButtonsDisplay(false);
+    }
+}
+
+function updateMuteButtonsDisplay(isMuted) {
+    const mute = document.getElementById('mute');
+    const unmute = document.getElementById('unmute');
+    const muteInGame = document.getElementById('muteInGame');
+    const unmuteInGame = document.getElementById('unmuteInGame');
+    
+    if (isMuted) {
+        muteIcon(mute, unmute, muteInGame, unmuteInGame);
+    } else {
+        unmuteIcon(mute, unmute, muteInGame, unmuteInGame);
+    }
+}
+
 function startGame() {
   showGame();
   gameStarted = true;
@@ -71,6 +102,7 @@ function muteSound() {
     playMusic = false;
     window.SOUNDS_ENABLED = false;
     muteIcon(mute, unmute, muteInGame, unmuteInGame);
+    localStorage.setItem('soundsEnabled', 'false');
   } else {
     if (gameStarted) {
       gameMusic.play();
@@ -78,6 +110,7 @@ function muteSound() {
     playMusic = true;
     window.SOUNDS_ENABLED = true;
     unmuteIcon(mute, unmute, muteInGame, unmuteInGame);
+    localStorage.setItem('soundsEnabled', 'true');
   }
 }
 

@@ -12,16 +12,21 @@ class Character extends MovableObject {
         'img/2_character_pepe/2_walk/W-26.png'
     ];
 
-    IMAGES_JUMPING = [
+    
+
+    IMAGES_JUMPING_UP = [
         'img/2_character_pepe/3_jump/J-31.png',
         'img/2_character_pepe/3_jump/J-32.png',
         'img/2_character_pepe/3_jump/J-33.png',
-        'img/2_character_pepe/3_jump/J-34.png',
+        'img/2_character_pepe/3_jump/J-34.png'
+    ];
+
+    IMAGES_JUMPING_DOWN = [
         'img/2_character_pepe/3_jump/J-35.png',
         'img/2_character_pepe/3_jump/J-36.png',
         'img/2_character_pepe/3_jump/J-37.png',
         'img/2_character_pepe/3_jump/J-38.png',
-        'img/2_character_pepe/3_jump/J-39.png',
+        'img/2_character_pepe/3_jump/J-39.png'
     ];
 
     IMAGES_HURT = [
@@ -74,16 +79,24 @@ class Character extends MovableObject {
     idleTimer = 0;
     gethit_sound = new Audio('audio/hit.wav');
     exchangeCoinBottleActive = false;
+    isRising = false;
+    isFalling = false;
+    jumpUpCurrentImage = 0;
+    jumpDownCurrentImage = 0;
+    jumpUpInterval = null;
+    jumpDownInterval = null;
 
     constructor() {
         super().loadImage('img/2_character_pepe/2_walk/W-21.png');
         this.loadImages(this.IMAGES_WALKING);
-        this.loadImages(this.IMAGES_JUMPING);
+        this.loadImages(this.IMAGES_JUMPING_UP);
+        this.loadImages(this.IMAGES_JUMPING_DOWN);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_ISDEAD);
         this.loadImages(this.IMAGES_IDLE);
         this.loadImages(this.IMAGES_LONGIDLE);
         this.animate();
+        this.animateJump();
         this.applyGravity();
     };
 
@@ -99,7 +112,102 @@ class Character extends MovableObject {
         }, 20);
         setInterval(() => this.checkCoinBottleExchange(), 100);
     }
- 
+
+    animateJump() {
+        // Monitor state changes to start/stop appropriate animations
+        setInterval(() => {
+            if (this.isAboveGround()) {
+                if (this.isRising && !this.jumpUpInterval) {
+                    this.startJumpUpAnimation();
+                } else if (!this.isRising && !this.jumpDownInterval) {
+                    this.startJumpDownAnimation();
+                }
+            } else {
+                // Clear intervals when on ground
+                this.clearJumpAnimations();
+            }
+        }, 20);
+    }
+
+    startJumpUpAnimation() {
+        this.jumpUpInterval = setInterval(() => {
+            this.animateJumpUp();
+        }, 35); // Faster animation for rising
+    }
+
+    startJumpDownAnimation() {
+        this.jumpDownInterval = setInterval(() => {
+            this.animateJumpDown();
+        }, 100); // Slower animation for falling
+    }
+
+    clearJumpAnimations() {
+        if (this.jumpUpInterval) {
+            clearInterval(this.jumpUpInterval);
+            this.jumpUpInterval = null;
+        }
+        if (this.jumpDownInterval) {
+            clearInterval(this.jumpDownInterval);
+            this.jumpDownInterval = null;
+        }
+    }
+
+    animateJumpUp() {
+        if (this.jumpUpCurrentImage < this.IMAGES_JUMPING_UP.length) {
+            this.img = this.imageCache[this.IMAGES_JUMPING_UP[this.jumpUpCurrentImage]];
+            this.jumpUpCurrentImage++;
+            // Once we've shown the last frame, don't increment anymore - keep the peak image
+            if (this.jumpUpCurrentImage >= this.IMAGES_JUMPING_UP.length) {
+                this.jumpUpCurrentImage = this.IMAGES_JUMPING_UP.length - 1;
+                clearInterval(this.jumpUpInterval);
+                this.jumpUpInterval = null;
+            }
+        }
+    }
+
+    animateJumpDown() {
+        if (this.jumpDownCurrentImage < this.IMAGES_JUMPING_DOWN.length) {
+            this.img = this.imageCache[this.IMAGES_JUMPING_DOWN[this.jumpDownCurrentImage]];
+            this.jumpDownCurrentImage++;
+            // Once we've shown the last frame, don't increment anymore - keep the landing image
+            if (this.jumpDownCurrentImage >= this.IMAGES_JUMPING_DOWN.length) {
+                this.jumpDownCurrentImage = this.IMAGES_JUMPING_DOWN.length - 1;
+                clearInterval(this.jumpDownInterval);
+                this.jumpDownInterval = null;
+            }
+        }
+    }
+
+    jump() {
+        super.jump();
+        this.isRising = true;
+        this.isFalling = false;
+        this.jumpUpCurrentImage = 0;
+        this.jumpDownCurrentImage = 0;
+        this.clearJumpAnimations(); // Clear any existing jump animations
+        this.idleTimer = 0;
+    }
+
+    applyGravity() {
+        setInterval(() => {
+            if (this.isAboveGround() || this.speedY > 0) {
+                this.y -= this.speedY;
+                this.speedY -= this.acceleration;
+                
+                // Detect transition from rising to falling
+                if (this.speedY <= 0 && this.isRising) {
+                    this.isRising = false;
+                    this.isFalling = true;
+                }
+            } else {
+                this.y = 180;
+                this.speedY = 0;
+                this.isRising = false;
+                this.isFalling = false;
+            }
+        }, 1000 / 25);
+    }
+
     movement() {
         if (this.canMoveRight()) {
             this.moveRight();
@@ -136,14 +244,14 @@ class Character extends MovableObject {
 
     animations() {
         if (this.isDead()) {
-            this.playAnimation(this.IMAGES_ISDEAD)
+            this.playAnimation(this.IMAGES_ISDEAD);
         } else if (this.isHurt()) {
             this.playAnimation(this.IMAGES_HURT);
             if (window.SOUNDS_ENABLED) {
                 this.gethit_sound.play();
             }
         } else if (this.isAboveGround()) {
-            this.playAnimation(this.IMAGES_JUMPING);
+            // Jump animation is handled by animateJump method
         } else {
             if (this.moveToSide()) {
                 this.playAnimation(this.IMAGES_WALKING);
@@ -194,6 +302,7 @@ class Character extends MovableObject {
             this.exchangeCoinBottleActive = true; 
         }
     }
+    
     
     canExchangeCoin() {
         return this.world && 

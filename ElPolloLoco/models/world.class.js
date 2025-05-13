@@ -72,8 +72,11 @@ class World {
     }
 
     checkPlayMusic() {
-        if (this.playMusic) {
-            this.gameMusic.play();
+        // Use the global sound preference
+        if (playMusic && gameMusic && gameMusic.paused) {
+            gameMusic.play();
+        } else if (!playMusic && gameMusic && !gameMusic.paused) {
+            gameMusic.pause();
         }
     }
 
