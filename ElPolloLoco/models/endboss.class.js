@@ -1,23 +1,108 @@
+/**
+ * Endboss (final enemy) class
+ * @extends MovableObject
+ */
 class Endboss extends MovableObject {
+    /**
+     * Height of the end boss
+     * @type {number}
+     */
     height = 400;
+    
+    /**
+     * Width of the end boss
+     * @type {number}
+     */
     width = 250;
+    
+    /**
+     * Y position of the end boss
+     * @type {number}
+     */
     y = 55;
+    
+    /**
+     * Energy/health of the end boss
+     * @type {number}
+     */
     energy = 7;
+    
+    /**
+     * X position of the end boss
+     * @type {number}
+     */
     x = 2500;
     
+    /**
+     * Flag indicating if the boss fight has started
+     * @type {boolean}
+     */
     startFight = false;
+    
+    /**
+     * Flag indicating if the character has made first contact with the boss
+     * @type {boolean}
+     */
     firstContact = false;
+    
+    /**
+     * Flag indicating if the boss has been hit
+     * @type {boolean}
+     */
     getHit = false;
+    
+    /**
+     * Flag indicating if the boss is jumping
+     * @type {boolean}
+     */
     isJumping = false;
+    
+    /**
+     * Cooldown time for jump attacks
+     * @type {number}
+     */
     jumpCooldown = 0;
+    
+    /**
+     * Flag indicating if the boss is concentrating to spawn chickens
+     * @type {boolean}
+     */
     isConcentrating = false;
+    
+    /**
+     * Cooldown time for concentration attacks
+     * @type {number}
+     */
     concentrationCooldown = 0;
+    
+    /**
+     * Reference to the game world
+     * @type {World}
+     */
     world;
     
+    /**
+     * Sound effect played when boss is hit
+     * @type {Audio}
+     */
     getHitSound = new Audio('audio/endboss_hit.mp3');
+    
+    /**
+     * Sound effect played during jump attack
+     * @type {Audio}
+     */
     jumpAttackSound = new Audio('audio/endboss_attack.mp3');
+    
+    /**
+     * Sound effect played during concentration
+     * @type {Audio}
+     */
     concentrationSound = new Audio('audio/concentration.wav');
 
+    /**
+     * Image paths for idle animation
+     * @type {string[]}
+     */
     IMAGES_IDLE = [
         'img/4_enemie_boss_chicken/2_alert/G5.png',
         'img/4_enemie_boss_chicken/2_alert/G6.png',
@@ -26,6 +111,10 @@ class Endboss extends MovableObject {
         'img/4_enemie_boss_chicken/2_alert/G9.png'
     ];
 
+    /**
+     * Image paths for fight animation
+     * @type {string[]}
+     */
     IMAGES_FIGHT = [
         'img/4_enemie_boss_chicken/1_walk/G1.png',
         'img/4_enemie_boss_chicken/1_walk/G2.png',
@@ -49,18 +138,30 @@ class Endboss extends MovableObject {
         'img/4_enemie_boss_chicken/3_attack/G20.png'
     ];
 
+    /**
+     * Image paths for hurt animation
+     * @type {string[]}
+     */
     IMAGES_HURT = [
         'img/4_enemie_boss_chicken/4_hurt/G21.png',
         'img/4_enemie_boss_chicken/4_hurt/G22.png',
         'img/4_enemie_boss_chicken/4_hurt/G23.png'
     ];
 
+    /**
+     * Image paths for dead animation
+     * @type {string[]}
+     */
     IMAGES_DEAD = [
         'img/4_enemie_boss_chicken/5_dead/G24.png',
         'img/4_enemie_boss_chicken/5_dead/G25.png',
         'img/4_enemie_boss_chicken/5_dead/G26.png'
     ];
 
+    /**
+     * Image paths for jump animation
+     * @type {string[]}
+     */
     IMAGES_JUMP = [
         'img/4_enemie_boss_chicken/3_attack/G13.png',
         'img/4_enemie_boss_chicken/3_attack/G14.png',
@@ -68,10 +169,18 @@ class Endboss extends MovableObject {
         'img/4_enemie_boss_chicken/3_attack/G16.png'
     ];
 
+    /**
+     * Image paths for concentration animation
+     * @type {string[]}
+     */
     IMAGES_CONCENTRATION = [
         'img/4_enemie_boss_chicken/2_alert/G6.png',
     ];
 
+    /**
+     * Constructor for the Endboss class
+     * Initializes images, animations, and gravity
+     */
     constructor() {
         super().loadImage('img/4_enemie_boss_chicken/2_alert/G5.png');
         this.loadImages(this.IMAGES_IDLE);
@@ -84,6 +193,9 @@ class Endboss extends MovableObject {
         this.applyGravity();
     }
 
+    /**
+     * Handles all animations and state changes
+     */
     animate() {
         setInterval(() => {
             if (this.isHurt()) {
@@ -117,6 +229,9 @@ class Endboss extends MovableObject {
         }, 1000);
     }
 
+    /**
+     * Handles boss movement and attack pattern selection
+     */
     moveAndAttack() {
         this.x -= 10;
         
@@ -129,6 +244,9 @@ class Endboss extends MovableObject {
         }
     }
 
+    /**
+     * Performs the jump attack that moves boss toward player
+     */
     performJumpAttack() {
         this.isJumping = true;
         this.jumpCooldown = 5; 
@@ -147,6 +265,9 @@ class Endboss extends MovableObject {
         }, 100);
     }
 
+    /**
+     * Performs concentration attack that spawns baby chickens
+     */
     concentrateAndSpawnChicken() {
         this.isConcentrating = true;
         this.concentrationCooldown = 8;
@@ -168,10 +289,18 @@ class Endboss extends MovableObject {
         }, 1500);
     }
 
+    /**
+     * Checks if the endboss is above the ground
+     * @returns {boolean} True if above ground
+     */
     isAboveGround() {
         return this.y < 55;
     }
 
+    /**
+     * Collision offset values for hit detection
+     * @type {object}
+     */
     offset = {
         top: 120, 
         bottom: 30,

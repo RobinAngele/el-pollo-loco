@@ -1,5 +1,12 @@
+/**
+ * Status bar to display endboss health
+ * @extends DrawableObjects
+ */
 class StatusBarEndboss extends DrawableObjects {
-
+    /**
+     * Image paths for different endboss health levels
+     * @type {string[]}
+     */
     IMAGES_ENDBOSS = [
         'img/7_statusbars/1_statusbar/2_statusbar_health/green/0.png',
         'img/7_statusbars/1_statusbar/2_statusbar_health/green/20.png',
@@ -9,9 +16,21 @@ class StatusBarEndboss extends DrawableObjects {
         'img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png'
     ];
 
+    /**
+     * Current endboss health percentage
+     * @type {number}
+     */
     percentageEndboss = 100;
+    
+    /**
+     * Flag indicating if the status bar is visible
+     * @type {boolean}
+     */
     visible = false;
 
+    /**
+     * Constructor for endboss health status bar
+     */
     constructor() {
         super();
         this.loadImages(this.IMAGES_ENDBOSS);
@@ -22,12 +41,20 @@ class StatusBarEndboss extends DrawableObjects {
         this.height = 50;
     }
 
+    /**
+     * Updates the endboss health percentage and corresponding image
+     * @param {number} percentageEndboss - New health percentage value
+     */
     setPercentageEndboss(percentageEndboss) {
         this.percentageEndboss = percentageEndboss;
         let path = this.IMAGES_ENDBOSS[this.resolveImageIndexEndboss()];
         this.img = this.imageCache[path];
     }
 
+    /**
+     * Determines the correct image index based on endboss health percentage
+     * @returns {number} Index of the image to use
+     */
     resolveImageIndexEndboss() {
         if(this.percentageEndboss == 100) {
             return 5;
@@ -44,6 +71,10 @@ class StatusBarEndboss extends DrawableObjects {
         }
     }
 
+    /**
+     * Overrides the draw method to only draw when visible
+     * @param {CanvasRenderingContext2D} ctx - The canvas context to draw on
+     */
     draw(ctx) {
         if (this.visible) {
             super.draw(ctx);

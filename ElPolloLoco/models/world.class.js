@@ -1,27 +1,144 @@
+/**
+ * Main game world class that manages all game entities and interactions
+ */
 class World {
+    /**
+     * The player character
+     * @type {Character}
+     */
     character = new Character();
+    
+    /**
+     * The current game level
+     * @type {Level}
+     */
     level = level1;
+    
+    /**
+     * Canvas element
+     * @type {HTMLCanvasElement}
+     */
     canvas;
+    
+    /**
+     * Canvas rendering context
+     * @type {CanvasRenderingContext2D}
+     */
     ctx;
+    
+    /**
+     * Keyboard input handler
+     * @type {Keyboard}
+     */
     keyboard;
+    
+    /**
+     * Camera X position for scrolling
+     * @type {number}
+     */
     camera_x = 0;
+    
+    /**
+     * Status bar for player health
+     * @type {StatusBarHealth}
+     */
     statusBarHealth = new StatusBarHealth();
+    
+    /**
+     * Status bar for collected bottles
+     * @type {StatusBarBottle}
+     */
     statusBarBottle = new StatusBarBottle();
+    
+    /**
+     * Status bar for collected coins
+     * @type {StatusBarCoin}
+     */
     statusBarCoin = new StatusBarCoin();
+    
+    /**
+     * Status bar for endboss health
+     * @type {StatusBarEndboss}
+     */
     statusBarEndboss = new StatusBarEndboss();
+    
+    /**
+     * Start screen object
+     * @type {Startscreen}
+     */
     startScreen = new Startscreen();
+    
+    /**
+     * Array of throwable objects (bottles)
+     * @type {ThrowableObject[]}
+     */
     throwableObject = [];
+    
+    /**
+     * Sound effect for collecting coins
+     * @type {Audio}
+     */
     coin_sound = new Audio('audio/coin.mp3');
+    
+    /**
+     * Sound effect for collecting bottles
+     * @type {Audio}
+     */
     bottle_sound = new Audio('audio/bottle.mp3');
+    
+    /**
+     * Reference to the endboss (final enemy)
+     * @type {Endboss}
+     */
     endboss = this.level.enemies[this.level.enemies.length - 1];
+    
+    /**
+     * Array of baby chicken enemies
+     * @type {BabyChicken[]}
+     */
     babyChickens = [];
+    
+    /**
+     * Endboss icon image
+     * @type {HTMLImageElement}
+     */
     endbossIcon = new Image();
+    
+    /**
+     * Coin icon image
+     * @type {HTMLImageElement}
+     */
     coinIcon = new Image();
+    
+    /**
+     * Bottle icon image
+     * @type {HTMLImageElement}
+     */
     bottleIcon = new Image();
+    
+    /**
+     * Maximum number of coins player can collect
+     * @type {number}
+     */
     MAX_COINS = 100;
+    
+    /**
+     * Maximum number of bottles player can carry
+     * @type {number}
+     */
     MAX_BOTTLES = 5;
+    
+    /**
+     * Flag indicating if bottle notification is shown
+     * @type {boolean}
+     */
     bottleNotificationShown = false;
 
+    /**
+     * World constructor
+     * @param {HTMLCanvasElement} canvas - The game canvas
+     * @param {Keyboard} keyboard - The keyboard input handler
+     */
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
@@ -35,44 +152,77 @@ class World {
         this.bottleIcon.src = 'img/7_statusbars/3_icons/icon_salsa_bottle.png';
     }
 
+    /**
+     * Checks if the game should end based on character or endboss state
+     */
     checkForGameOver() {
         setInterval(() => {
             if (this.character.isDead()) {
                 setTimeout(() => {
-                    this.showYouLostScreen();
-                    this.clearAllIntervals();
-                    gameMusic.pause();
+                    this.hideBottleNotificationAndShowGameOver('lost');
                 }, 1500);
             } else if (this.endboss.isDead()) {
                 setTimeout(() => {
-                    this.showGameOverScreen();
-                    this.clearAllIntervals();
-                    gameMusic.pause();
+                    this.hideBottleNotificationAndShowGameOver('win');
                 }, 1500);
             }
         }, 1000);
     }
 
+    /**
+     * Hides bottle notification and shows appropriate game over screen
+     * @param {string} outcome - 'win' or 'lost'
+     */
+    hideBottleNotificationAndShowGameOver(outcome) {
+        // Hide bottle notification if shown
+        const notification = document.getElementById('bottleNotification');
+        if (notification) {
+            notification.classList.add('d-none');
+        }
+        this.bottleNotificationShown = false;
+        
+        // Show appropriate game over screen
+        if (outcome === 'lost') {
+            this.showYouLostScreen();
+        } else {
+            this.showGameOverScreen();
+        }
+        
+        this.clearAllIntervals();
+        gameMusic.pause();
+    }
+
+    /**
+     * Refreshes the page after a delay
+     */
     refreshPageWithTimer() {
         setTimeout(() => {
             window.location.reload();
         }, 3000);
     }
 
+    /**
+     * Shows the game over screen when player loses
+     */
     showYouLostScreen() {
         let lost = document.getElementById('gameOverScreenLost');
         lost.style.display = "flex";
         lost.style.zIndex = "999";
     }
 
+    /**
+     * Shows the game over screen when player wins
+     */
     showGameOverScreen() {
         let win = document.getElementById('gameOverScreenWin');
         win.style.display = "flex";
         win.style.zIndex = "999";
     }
 
+    /**
+     * Checks if music should be playing based on global sound settings
+     */
     checkPlayMusic() {
-        // Use the global sound preference
         if (playMusic && gameMusic && gameMusic.paused) {
             gameMusic.play();
         } else if (!playMusic && gameMusic && !gameMusic.paused) {
@@ -80,13 +230,23 @@ class World {
         }
     }
 
+    /**
+     * Sets the world reference on character and endboss
+     */
     setWorld() {
         this.character.world = this;
         this.endboss.world = this;
     }
 
+    /**
+     * Position where the endboss fight is triggered
+     * @type {number}
+     */
     static BOSS_TRIGGER_POSITION = 2000;
 
+    /**
+     * Checks if the boss fight should start based on character position
+     */
     checkBossFight() {
         if (this.character.x > World.BOSS_TRIGGER_POSITION) {
             this.endboss.firstContact = true;
@@ -94,6 +254,9 @@ class World {
         }
     }
 
+    /**
+     * Handles showing/hiding the bottle notification
+     */
     checkBottleNotification() {
         const notification = document.getElementById('bottleNotification');
         if (!notification) return;
