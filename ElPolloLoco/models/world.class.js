@@ -325,7 +325,6 @@ class World {
             this.character.bottleCooldown = this.character.bottleCooldownTime;
             this.character.idleTimer = 0;
         }
-        
         this.handleBottleCollisions();
         this.handleBottleCleanup();
         this.statusBarBottle.setPercentageBottle(this.character.bottles);
@@ -355,7 +354,12 @@ class World {
     }
     
     handleBottleCleanup() {
-        this.throwableObject = this.throwableObject.filter(bottle => bottle.y <= 500);
+        // Modified to account for bottles thrown in either direction
+        this.throwableObject = this.throwableObject.filter(bottle => 
+            bottle.y <= 500 && 
+            bottle.x >= -500 && 
+            bottle.x <= this.level.level_end_x + 500
+        );
     }
     
     damageEnemy(enemy, bottle) {
@@ -366,13 +370,13 @@ class World {
     }
 
     throwBottle() {
-        const offsetX = 40;
         const offsetY = 100;
+        const offsetX = this.character.otherDirection ? -20 : 40;
         const bottle = new ThrowableObjects(
             this.character.x + offsetX, 
-            this.character.y + offsetY
+            this.character.y + offsetY,
+            this.character.otherDirection
         );
-        
         this.throwableObject.push(bottle);
         this.character.bottles--;
         this.updateStatusBarBottle();

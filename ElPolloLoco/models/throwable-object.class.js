@@ -18,28 +18,29 @@ class ThrowableObjects extends MovableObject {
      * Constructor for throwable objects
      * @param {number} x - Initial x position
      * @param {number} y - Initial y position
+     * @param {boolean} [otherDirection=false] - Direction to throw (true = left, false = right)
      */
-    constructor(x, y) {
+    constructor(x, y, otherDirection = false) {
         super().loadImage('img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png');
         this.loadImages(this.IMG_BOTTLE);
         this.x = x;
         this.y = y;
-        this.height = 100
+        this.height = 100;
         this.width = 100;
+        this.otherDirection = otherDirection;
         this.throw();
     }
 
     /**
      * Throws the object by applying gravity and setting initial speed
-     * @param {number} x - Not used but kept for compatibility
-     * @param {number} y - Not used but kept for compatibility
      */
-    throw(x, y) {
+    throw() {
         this.speedY = 30;
         this.applyGravity();
+        
         setInterval(() => {
-            this.playAnimation(this.IMG_BOTTLE)
-            this.x += 20;
+            this.playAnimation(this.IMG_BOTTLE);
+            this.x += this.otherDirection ? -20 : 20;
         }, 50);
     }
 

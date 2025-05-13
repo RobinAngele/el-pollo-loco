@@ -55,7 +55,7 @@ class BabyChicken extends MovableObject {
      * Sound effect for baby chicken death
      * @type {Audio}
      */
-    dead_sound = new Audio('audio/baby_chicken_dies.mp3');
+    dead_sound = new Audio('audio/chicken_dies.mp3');
 
     /**
      * BabyChicken constructor
