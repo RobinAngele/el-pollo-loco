@@ -1,33 +1,48 @@
 /**
- * Flag to track if control menu is open
+ * Controller for handling UI interactions in the game
+ * @module uiController
+ */
+
+/**
+ * Flag indicating whether the control menu is currently open
  * @type {boolean}
+ * @default false
  */
 let control = false;
+
 /**
- * Flag to track if music should be played
+ * Flag indicating whether music should be played
  * @type {boolean}
+ * @default true
  */
 let playMusic = true;
+
 /**
- * Flag to track if game has been started
+ * Flag indicating whether the game has been started
  * @type {boolean}
+ * @default false
  */
 let gameStarted = false;
+
 /**
- * Background music audio element
+ * Audio element for the background music
  * @type {HTMLAudioElement}
  */
 let gameMusic = new Audio('audio/background_music.mp3');
 gameMusic.volume = 0.3;
+
 /**
- * Flag to track fullscreen mode status
+ * Flag indicating whether the game is in fullscreen mode
  * @type {boolean}
+ * @default false
  */
 let fullscreenMode = false;
 
 /**
- * Global flag to enable/disable all sound effects
+ * Global flag to enable/disable all sound effects in the game
  * @type {boolean}
+ * @default true
+ * @global
  */
 window.SOUNDS_ENABLED = true;
 
@@ -113,16 +128,50 @@ function showGame() {
 
 /**
  * Shows responsive buttons for mobile devices when appropriate
+ * Also shows controls on tablet devices based on screen size or touch capability
  */
 function showResponsiveBtn() {
+  let mobileControl = document.getElementById('mobile-cont');
+  
+  // Show controls on small height screens (phones in landscape)
   if (window.innerHeight < 480 && gameStarted) {
-    let mobileControl = document.getElementById('mobile-cont');
+    mobileControl.classList.remove('d-none');
+  } 
+  // Show controls on tablet devices (based on width or touch capability)
+  else if (gameStarted && (window.innerWidth <= 1024 || isTabletDevice())) {
     mobileControl.classList.remove('d-none');
   }
 }
 
 /**
- * Plays background music if sound is enabled
+ * Detects if the current device is likely a tablet
+ * @returns {boolean} True if the device is a tablet
+ */
+function isTabletDevice() {
+  // Check for touch capability
+  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  
+  /**
+   * Checks if the device has screen dimensions typical for tablets
+   * @type {boolean}
+   * @private
+   */
+  const tabletSized = window.innerWidth >= 600 && window.innerWidth <= 1024;
+  
+  /**
+   * Checks if the user agent string matches common tablet identifiers
+   * Note: User agent detection is not fully reliable but used as a fallback
+   * @type {boolean}
+   * @private
+   */
+  const tabletUA = /iPad|Android(?!.*Mobile)|Tablet/i.test(navigator.userAgent);
+  
+  return hasTouch && (tabletSized || tabletUA);
+}
+
+/**
+ * Plays background music if audio is enabled in game settings
+ * @returns {void}
  */
 function checkPlayMusic() {
   if (playMusic) {
@@ -131,7 +180,9 @@ function checkPlayMusic() {
 }
 
 /**
- * Toggles the display of the controls instructions panel
+ * Toggles the visibility of the controls instructions panel
+ * Updates the control state flag to track panel visibility
+ * @returns {void}
  */
 function toggleControlsInstructions() {
   let controlMenu = document.getElementById('game-controls-instructions');
@@ -145,15 +196,16 @@ function toggleControlsInstructions() {
 }
 
 /**
- * Toggles sound on/off and updates UI accordingly
- * Also saves the preference to localStorage
+ * Toggles game sound on/off and updates the UI accordingly
+ * Saves the user's preference to localStorage for persistence between sessions
+ * @returns {void}
  */
 function muteSound() {
   let mute = document.getElementById('mute');
   let unmute = document.getElementById('unmute');
   let muteInGame = document.getElementById('muteInGame');
   let unmuteInGame = document.getElementById('unmuteInGame');
-
+  
   if (playMusic) {
     gameMusic.pause();
     playMusic = false;
