@@ -135,6 +135,24 @@ class World {
     bottleNotificationShown = false;
 
     /**
+     * Flag indicating if character is temporarily invincible after taking damage
+     * @type {boolean}
+     */
+    characterInvincible = false;
+
+    /**
+     * Duration of invincibility after taking damage (in milliseconds)
+     * @type {number}
+     */
+    invincibleDuration = 1000;
+
+    /**
+     * Timestamp when character was last hit
+     * @type {number}
+     */
+    lastHitTime = 0;
+
+    /**
      * World constructor
      * @param {HTMLCanvasElement} canvas - The game canvas
      * @param {Keyboard} keyboard - The keyboard input handler
@@ -281,6 +299,7 @@ class World {
             this.checkEnvironmentInteractions();
             this.checkGameState();
             this.checkBottleNotification();
+            this.checkInvincibilityStatus();
         }, 1000 / 60);
         
         setInterval(() => this.checkEnemyHitsPeppe(), 200);
@@ -315,6 +334,8 @@ class World {
      * Checks if enemies are hitting the player character
      */
     checkEnemyHitsPeppe() {
+        if (this.characterInvincible) return;
+        
         this.level.enemies.forEach((enemy) => {
             if (this.hitboxColliding(enemy)) {
                 this.playerTakesDamage();
@@ -329,6 +350,22 @@ class World {
         this.character.hit(20);
         this.character.idleTimer = 0;
         this.statusBarHealth.setPercentageHealth(this.character.energy);
+        
+        // Set character as invincible for a short duration
+        this.characterInvincible = true;
+        this.lastHitTime = new Date().getTime();
+    }
+
+    /**
+     * Checks and updates the character's invincibility status
+     */
+    checkInvincibilityStatus() {
+        if (this.characterInvincible) {
+            const currentTime = new Date().getTime();
+            if (currentTime - this.lastHitTime > this.invincibleDuration) {
+                this.characterInvincible = false;
+            }
+        }
     }
 
     /**
