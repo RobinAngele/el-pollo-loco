@@ -490,6 +490,10 @@ class Character extends MovableObject {
         this.coins -= 20;
         this.bottles++;
         this.updateStatusBars();
+        
+        if (window.SOUNDS_ENABLED && this.world) {
+            this.world.exchange_sound.play();
+        }
     }
     
     /**

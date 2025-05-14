@@ -87,6 +87,12 @@ class World {
     bottle_sound = new Audio('audio/bottle.mp3');
     
     /**
+     * Sound effect for exchanging coins for bottles
+     * @type {Audio}
+     */
+    exchange_sound = new Audio('audio/coin_exchange.mp3');
+    
+    /**
      * Reference to the endboss (final enemy)
      * @type {Endboss}
      */
@@ -466,6 +472,25 @@ class World {
         this.throwableObject.push(bottle);
         this.character.bottles--;
         this.updateStatusBarBottle();
+    }
+
+    /**
+     * Allows the player to buy a bottle using coins
+     * @returns {boolean} Whether the purchase was successful
+     */
+    buyBottle() {
+        if (this.character.coins >= 20 && this.character.bottles < this.MAX_BOTTLES) {
+            this.character.coins -= 20;
+            this.character.bottles++;
+            this.updateStatusBarBottle();
+            this.statusBarCoin.setPercentageCoin(this.character.coins);
+            
+            if (window.SOUNDS_ENABLED) {
+                this.exchange_sound.play();
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
