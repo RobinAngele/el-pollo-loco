@@ -417,33 +417,20 @@ class World {
             const bottle = this.throwableObject[i];
             const hitEnemy = this.findCollidingEnemy(bottle);
             
-            if (hitEnemy) {
+            if (hitEnemy && !bottle.hasHit) {
+                // Apply damage to enemy and trigger bottle explosion
                 this.damageEnemy(hitEnemy, bottle);
-                this.throwableObject.splice(i, 1);
+                bottle.explode();
+                
+                // Remove bottle from array after a short delay to allow animation to play
+                setTimeout(() => {
+                    const index = this.throwableObject.indexOf(bottle);
+                    if (index !== -1) {
+                        this.throwableObject.splice(index, 1);
+                    }
+                }, 300); // Short delay for explosion animation
             }
         }
-    }
-    
-    /**
-     * Finds an enemy that a bottle is colliding with
-     * @param {ThrowableObjects} bottle - The bottle to check
-     * @returns {MovableObject|undefined} The colliding enemy or undefined
-     */
-    findCollidingEnemy(bottle) {
-        return this.level.enemies.find(enemy => 
-            bottle.isColliding(enemy) && !enemy.isDead());
-    }
-    
-    /**
-     * Removes bottles that are out of bounds
-     */
-    handleBottleCleanup() {
-        // Modified to account for bottles thrown in either direction
-        this.throwableObject = this.throwableObject.filter(bottle => 
-            bottle.y <= 500 && 
-            bottle.x >= -500 && 
-            bottle.x <= this.level.level_end_x + 500
-        );
     }
     
     /**
@@ -456,6 +443,28 @@ class World {
         if (enemy instanceof Endboss) {
             this.statusBarEndboss.setPercentageEndboss(enemy.energy * 20);
         }
+    }
+
+    /**
+     * Finds an enemy that a bottle is colliding with
+     * @param {ThrowableObjects} bottle - The bottle to check
+     * @returns {MovableObject|undefined} The colliding enemy or undefined
+     */
+    findCollidingEnemy(bottle) {
+        return this.level.enemies.find(enemy => 
+            bottle.isColliding(enemy) && !enemy.isDead() && !bottle.hasHit);
+    }
+    
+    /**
+     * Removes bottles that are out of bounds
+     */
+    handleBottleCleanup() {
+        // Modified to account for bottles thrown in either direction
+        this.throwableObject = this.throwableObject.filter(bottle => 
+            bottle.y <= 500 && 
+            bottle.x >= -500 && 
+            bottle.x <= this.level.level_end_x + 500
+        );
     }
 
     /**
