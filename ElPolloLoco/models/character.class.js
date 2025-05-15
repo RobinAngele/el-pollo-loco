@@ -89,7 +89,6 @@ class Character extends MovableObject {
      * @type {string[]}
      */
     IMAGES_LONGIDLE = [
-
         'img/2_character_pepe/1_idle/long_idle/I-11.png',
         'img/2_character_pepe/1_idle/long_idle/I-12.png',
         'img/2_character_pepe/1_idle/long_idle/I-13.png',
@@ -145,46 +144,22 @@ class Character extends MovableObject {
     gethit_sound = new Audio('audio/hit.wav');
 
     /**
-     * Flag indicating if coin-bottle exchange is active
-     * @type {boolean}
+     * Character animations manager
+     * @type {CharacterAnimations}
      */
-    exchangeCoinBottleActive = false;
+    animations;
 
     /**
-     * Flag indicating if the character is rising during a jump
-     * @type {boolean}
+     * Character state manager
+     * @type {CharacterState}
      */
-    isRising = false;
+    state;
 
     /**
-     * Flag indicating if the character is falling during a jump
-     * @type {boolean}
+     * Character movement manager
+     * @type {CharacterMovement}
      */
-    isFalling = false;
-
-    /**
-     * Current image index for jump up animation
-     * @type {number}
-     */
-    jumpUpCurrentImage = 0;
-
-    /**
-     * Current image index for jump down animation
-     * @type {number}
-     */
-    jumpDownCurrentImage = 0;
-
-    /**
-     * Interval ID for jump up animation
-     * @type {number|null}
-     */
-    jumpUpInterval = null;
-
-    /**
-     * Interval ID for jump down animation
-     * @type {number|null}
-     */
-    jumpDownInterval = null;
+    movement;
 
     /**
      * Constructor for the Character class
@@ -198,346 +173,15 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_ISDEAD);
         this.loadImages(this.IMAGES_IDLE);
         this.loadImages(this.IMAGES_LONGIDLE);
-        this.animate();
-        this.animateJump();
-        this.applyGravity();
-    };
-
-    /**
-     * Handles character animations
-     */
-    animate() {
-        setInterval(() => this.movement(), 1000 / 60);
-        setInterval(() => this.animations(), 40);
-        setInterval(() => this.increaseIdleTimer(), 500);
-        setInterval(() => this.idle(), 200);
-        setInterval(() => {
-            if (this.bottleCooldown > 0) {
-                this.bottleCooldown -= 20;
-            }
-        }, 20);
-        setInterval(() => this.checkCoinBottleExchange(), 100);
-    }
-
-    /**
-     * Handles jump animations
-     */
-    animateJump() {
-        setInterval(() => {
-            if (this.isAboveGround()) {
-                if (this.isRising && !this.jumpUpInterval) {
-                    this.startJumpUpAnimation();
-                } else if (!this.isRising && !this.jumpDownInterval) {
-                    this.startJumpDownAnimation();
-                }
-            } else {
-                this.clearJumpAnimations();
-            }
-        }, 20);
-    }
-
-    /**
-     * Starts jump up animation
-     */
-    startJumpUpAnimation() {
-        this.jumpUpInterval = setInterval(() => {
-            this.animateJumpUp();
-        }, 35);
-    }
-
-    /**
-     * Starts jump down animation
-     */
-    startJumpDownAnimation() {
-        this.jumpDownInterval = setInterval(() => {
-            this.animateJumpDown();
-        }, 100);
-    }
-
-    /**
-     * Clears jump animations
-     */
-    clearJumpAnimations() {
-        if (this.jumpUpInterval) {
-            clearInterval(this.jumpUpInterval);
-            this.jumpUpInterval = null;
-        }
-        if (this.jumpDownInterval) {
-            clearInterval(this.jumpDownInterval);
-            this.jumpDownInterval = null;
-        }
-    }
-
-    /**
-     * Animates jump up
-     */
-    animateJumpUp() {
-        if (this.jumpUpCurrentImage < this.IMAGES_JUMPING_UP.length) {
-            this.img = this.imageCache[this.IMAGES_JUMPING_UP[this.jumpUpCurrentImage]];
-            this.jumpUpCurrentImage++;
-            this.checkJumpUpAnimationComplete();
-        }
-    }
-
-    /**
-     * Checks if jump up animation is complete and cleans up
-     */
-    checkJumpUpAnimationComplete() {
-        if (this.jumpUpCurrentImage >= this.IMAGES_JUMPING_UP.length) {
-            this.jumpUpCurrentImage = this.IMAGES_JUMPING_UP.length - 1;
-            clearInterval(this.jumpUpInterval);
-            this.jumpUpInterval = null;
-        }
-    }
-
-    /**
-     * Animates jump down
-     */
-    animateJumpDown() {
-        if (this.jumpDownCurrentImage < this.IMAGES_JUMPING_DOWN.length) {
-            this.img = this.imageCache[this.IMAGES_JUMPING_DOWN[this.jumpDownCurrentImage]];
-            this.jumpDownCurrentImage++;
-            this.checkJumpDownAnimationComplete();
-        }
-    }
-
-    /**
-     * Checks if jump down animation is complete and cleans up
-     */
-    checkJumpDownAnimationComplete() {
-        if (this.jumpDownCurrentImage >= this.IMAGES_JUMPING_DOWN.length) {
-            this.jumpDownCurrentImage = this.IMAGES_JUMPING_DOWN.length - 1;
-            clearInterval(this.jumpDownInterval);
-            this.jumpDownInterval = null;
-        }
-    }
-
-    /**
-     * Handles character jump
-     */
-    jump() {
-        super.jump();
-        this.isRising = true;
-        this.isFalling = false;
-        this.jumpUpCurrentImage = 0;
-        this.jumpDownCurrentImage = 0;
-        this.clearJumpAnimations();
-        this.idleTimer = 0;
-    }
-
-    /**
-     * Applies gravity to the character
-     */
-    applyGravity() {
-        setInterval(() => {
-            this.applyGravityPhysics();
-        }, 1000 / 25);
-    }
-
-    /**
-     * Applies gravity physics calculations
-     */
-    applyGravityPhysics() {
-        if (this.isAboveGround() || this.speedY > 0) {
-            this.y -= this.speedY;
-            this.speedY -= this.acceleration;
-            this.checkFallingState();
-        } else {
-            this.resetGroundPosition();
-        }
-    }
-
-    /**
-     * Checks if character has started falling
-     */
-    checkFallingState() {
-        if (this.speedY <= 0 && this.isRising) {
-            this.isRising = false;
-            this.isFalling = true;
-        }
-    }
-
-    /**
-     * Resets position when character is on the ground
-     */
-    resetGroundPosition() {
-        this.y = 180;
-        this.speedY = 0;
-        this.isRising = false;
-        this.isFalling = false;
-    }
-
-    /**
-     * Handles character movement
-     */
-    movement() {
-        if (this.canMoveRight()) {
-            this.moveRight();
-        }
-        if (this.canMoveLeft()) {
-            this.moveLeft();
-        }
-        if (this.world.keyboard.UP && !this.isAboveGround()) {
-            this.jump();
-            this.idleTimer = 0;
-        }
-        this.world.camera_x = -this.x + 100;
-    }
-
-    /**
-     * Moves character to the right
-     */
-    moveRight(){
-        super.moveRight();
-        this.otherDirection = false;
-        this.idleTimer = 0;
-    }
-
-    /**
-     * Moves character to the left
-     */
-    moveLeft(){
-        super.moveLeft();
-        this.otherDirection = true;
-        this.idleTimer = 0;
-    }
-
-    /**
-     * Checks if character can move to the right
-     * @returns {boolean}
-     */
-    canMoveRight(){
-        return this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x
-    }
-
-    /**
-     * Checks if character can move to the left
-     * @returns {boolean}
-     */
-    canMoveLeft(){
-        return this.world.keyboard.LEFT && this.x > 0
-    }
-
-    /**
-     * Handles character animations based on state
-     */
-    animations() {
-        if (this.isDead()) {
-            this.playAnimation(this.IMAGES_ISDEAD);
-        } else if (this.isHurt()) {
-            this.playAnimation(this.IMAGES_HURT);
-            if (window.SOUNDS_ENABLED) {
-                this.gethit_sound.play();
-            }
-        } else if (this.isAboveGround()) {
-        } else {
-            if (this.moveToSide()) {
-                this.playAnimation(this.IMAGES_WALKING);
-            }
-        }
-    }
-
-    /**
-     * Checks if character is moving to the side
-     * @returns {boolean}
-     */
-    moveToSide(){
-        return this.world.keyboard.RIGHT || this.world.keyboard.LEFT
-    }
-
-    /**
-     * Increases idle timer
-     */
-    increaseIdleTimer() {
-        if (this.noInteractions) {
-            this.idleTimer++;
-        }
-    }
-
-    /**
-     * Handles idle animations
-     */
-    idle() {
-        if (this.shortTimeWithoutActions()) {
-            this.playAnimation(this.IMAGES_IDLE);
-        } else if (this.longTimeWithoutActions()) {
-            this.playAnimation(this.IMAGES_LONGIDLE);
-        }
-    }
-
-    /**
-     * Checks if character has been idle for a long time
-     * @returns {boolean}
-     */
-    longTimeWithoutActions(){
-        return this.idleTimer > 10
-    }
-
-    /**
-     * Checks if character has been idle for a short time
-     * @returns {boolean}
-     */
-    shortTimeWithoutActions() {
-        return this.idleTimer > 0 && this.idleTimer < 10;
-    }
-
-    /**
-     * Checks if there are no interactions
-     * @returns {boolean}
-     */
-    noInteractions() {
-        return !this.world.keyboard.RIGHT &&
-               !this.world.keyboard.LEFT &&
-               !this.world.keyboard.UP &&
-               !this.world.keyboard.T &&
-               !this.isHurt();
-    }
-
-    /**
-     * Checks and handles coin-bottle exchange
-     */
-    checkCoinBottleExchange() {
-        if (!this.world.keyboard.B) {
-            this.exchangeCoinBottleActive = false;
-        }   
-        if (this.canExchangeCoin()) {
-            this.exchangeCoin();
-            this.exchangeCoinBottleActive = true; 
-        }
-    }
-    
-    /**
-     * Checks if coin can be exchanged for a bottle
-     * @returns {boolean}
-     */
-    canExchangeCoin() {
-        return this.world && 
-               this.world.keyboard.B && 
-               !this.exchangeCoinBottleActive &&
-               this.coins >= 20 && 
-               this.bottles < this.world.MAX_BOTTLES;
-    }
-    
-    /**
-     * Exchanges coin for a bottle
-     */
-    exchangeCoin() {
-        this.coins -= 20;
-        this.bottles++;
-        this.updateStatusBars();
         
-        if (window.SOUNDS_ENABLED && this.world) {
-            this.world.exchange_sound.play();
-        }
-    }
-    
-    /**
-     * Updates status bars for coins and bottles
-     */
-    updateStatusBars() {
-        this.world.statusBarCoin.setPercentageCoin(this.coins);
-        this.world.statusBarBottle.setPercentageBottle(this.bottles);
-    }
+        // Create manager components
+        this.animations = new CharacterAnimations(this);
+        this.state = new CharacterState(this);
+        this.movement = new CharacterMovement(this);
+        
+        // Initialize animations
+        this.animations.animateJump();
+    };
 
     /**
      * Offset values for collision detection
