@@ -275,11 +275,18 @@ class Character extends MovableObject {
         if (this.jumpUpCurrentImage < this.IMAGES_JUMPING_UP.length) {
             this.img = this.imageCache[this.IMAGES_JUMPING_UP[this.jumpUpCurrentImage]];
             this.jumpUpCurrentImage++;
-            if (this.jumpUpCurrentImage >= this.IMAGES_JUMPING_UP.length) {
-                this.jumpUpCurrentImage = this.IMAGES_JUMPING_UP.length - 1;
-                clearInterval(this.jumpUpInterval);
-                this.jumpUpInterval = null;
-            }
+            this.checkJumpUpAnimationComplete();
+        }
+    }
+
+    /**
+     * Checks if jump up animation is complete and cleans up
+     */
+    checkJumpUpAnimationComplete() {
+        if (this.jumpUpCurrentImage >= this.IMAGES_JUMPING_UP.length) {
+            this.jumpUpCurrentImage = this.IMAGES_JUMPING_UP.length - 1;
+            clearInterval(this.jumpUpInterval);
+            this.jumpUpInterval = null;
         }
     }
 
@@ -290,11 +297,18 @@ class Character extends MovableObject {
         if (this.jumpDownCurrentImage < this.IMAGES_JUMPING_DOWN.length) {
             this.img = this.imageCache[this.IMAGES_JUMPING_DOWN[this.jumpDownCurrentImage]];
             this.jumpDownCurrentImage++;
-            if (this.jumpDownCurrentImage >= this.IMAGES_JUMPING_DOWN.length) {
-                this.jumpDownCurrentImage = this.IMAGES_JUMPING_DOWN.length - 1;
-                clearInterval(this.jumpDownInterval);
-                this.jumpDownInterval = null;
-            }
+            this.checkJumpDownAnimationComplete();
+        }
+    }
+
+    /**
+     * Checks if jump down animation is complete and cleans up
+     */
+    checkJumpDownAnimationComplete() {
+        if (this.jumpDownCurrentImage >= this.IMAGES_JUMPING_DOWN.length) {
+            this.jumpDownCurrentImage = this.IMAGES_JUMPING_DOWN.length - 1;
+            clearInterval(this.jumpDownInterval);
+            this.jumpDownInterval = null;
         }
     }
 
@@ -316,20 +330,41 @@ class Character extends MovableObject {
      */
     applyGravity() {
         setInterval(() => {
-            if (this.isAboveGround() || this.speedY > 0) {
-                this.y -= this.speedY;
-                this.speedY -= this.acceleration;
-                if (this.speedY <= 0 && this.isRising) {
-                    this.isRising = false;
-                    this.isFalling = true;
-                }
-            } else {
-                this.y = 180;
-                this.speedY = 0;
-                this.isRising = false;
-                this.isFalling = false;
-            }
+            this.applyGravityPhysics();
         }, 1000 / 25);
+    }
+
+    /**
+     * Applies gravity physics calculations
+     */
+    applyGravityPhysics() {
+        if (this.isAboveGround() || this.speedY > 0) {
+            this.y -= this.speedY;
+            this.speedY -= this.acceleration;
+            this.checkFallingState();
+        } else {
+            this.resetGroundPosition();
+        }
+    }
+
+    /**
+     * Checks if character has started falling
+     */
+    checkFallingState() {
+        if (this.speedY <= 0 && this.isRising) {
+            this.isRising = false;
+            this.isFalling = true;
+        }
+    }
+
+    /**
+     * Resets position when character is on the ground
+     */
+    resetGroundPosition() {
+        this.y = 180;
+        this.speedY = 0;
+        this.isRising = false;
+        this.isFalling = false;
     }
 
     /**

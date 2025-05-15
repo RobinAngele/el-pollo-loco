@@ -170,30 +170,36 @@ function toggleControlsInstructions() {
 }
 
 /**
+ * Gets all sound control button elements
+ * @returns {Object} Object containing all mute/unmute buttons
+ */
+function getSoundButtons() {
+  return {
+    mute: document.getElementById('mute'),
+    unmute: document.getElementById('unmute'),
+    muteInGame: document.getElementById('muteInGame'),
+    unmuteInGame: document.getElementById('unmuteInGame')
+  };
+}
+
+/**
  * Toggles game sound on/off and updates the UI accordingly
  * Saves the user's preference to localStorage for persistence between sessions
  */
 function muteSound() {
-  let mute = document.getElementById('mute');
-  let unmute = document.getElementById('unmute');
-  let muteInGame = document.getElementById('muteInGame');
-  let unmuteInGame = document.getElementById('unmuteInGame');
+  const buttons = getSoundButtons();
+  playMusic = !playMusic;
+  window.SOUNDS_ENABLED = playMusic;
   
   if (playMusic) {
-    gameMusic.pause();
-    playMusic = false;
-    window.SOUNDS_ENABLED = false;
-    muteIcon(mute, unmute, muteInGame, unmuteInGame);
-    localStorage.setItem('soundsEnabled', 'false');
+    if (gameStarted) gameMusic.play();
+    unmuteIcon(buttons.mute, buttons.unmute, buttons.muteInGame, buttons.unmuteInGame);
   } else {
-    if (gameStarted) {
-      gameMusic.play();
-    }
-    playMusic = true;
-    window.SOUNDS_ENABLED = true;
-    unmuteIcon(mute, unmute, muteInGame, unmuteInGame);
-    localStorage.setItem('soundsEnabled', 'true');
+    gameMusic.pause();
+    muteIcon(buttons.mute, buttons.unmute, buttons.muteInGame, buttons.unmuteInGame);
   }
+  
+  localStorage.setItem('soundsEnabled', playMusic.toString());
 }
 
 /**
@@ -348,42 +354,89 @@ function showControl() {
 }
 
 /**
+ * Clears all interval timers in the game
+ */
+function clearAllIntervals() {
+  for (let i = 1; i < 9999; i++) {
+    window.clearInterval(i);
+  }
+}
+
+/**
+ * Resets the game world state to initial values
+ */
+function resetGameWorld() {
+  if (window.world) {
+    resetCharacterState();
+    resetStatusBars();
+    clearWorldCanvas();
+  }
+}
+
+/**
+ * Resets the character state (coins, bottles)
+ */
+function resetCharacterState() {
+  window.world.character.coins = 0;
+  window.world.character.bottles = 0;
+}
+
+/**
+ * Resets all status bars to their initial values
+ */
+function resetStatusBars() {
+  window.world.statusBarHealth.setPercentageHealth(100);
+  window.world.statusBarBottle.setPercentageBottle(0);
+  window.world.statusBarCoin.setPercentageCoin(0);
+  window.world.statusBarEndboss.setPercentageEndboss(100);
+  window.world.statusBarEndboss.visible = false;
+}
+
+/**
+ * Clears the game canvas and resets bottle notification
+ */
+function clearWorldCanvas() {
+  window.world.bottleNotificationShown = false;
+  window.world.ctx.clearRect(0, 0, window.world.canvas.width, window.world.canvas.height);
+}
+
+/**
  * Restarts the game after a game over
  * Resets all game state variables and hides game over screens
  */
 function restartGame() {
+  hideGameScreens();
+  resetGameState();
+  startNewGame();
+}
+
+/**
+ * Hides game over screens and notifications
+ */
+function hideGameScreens() {
   document.getElementById('gameOverScreenLost').style.display = "none";
   document.getElementById('gameOverScreenWin').style.display = "none";
   document.getElementById('bottleNotification').classList.add('d-none');
-  
+}
+
+/**
+ * Resets the game state
+ */
+function resetGameState() {
   gameStarted = false;
-  
-  for (let i = 1; i < 9999; i++) {
-    window.clearInterval(i);
-  }
-  
-  if (window.world) {
-    window.world.character.coins = 0;
-    window.world.character.bottles = 0;
-    
-    window.world.statusBarHealth.setPercentageHealth(100);
-    window.world.statusBarBottle.setPercentageBottle(0);
-    window.world.statusBarCoin.setPercentageCoin(0);
-    window.world.statusBarEndboss.setPercentageEndboss(100);
-    window.world.statusBarEndboss.visible = false;
-    
-    if (window.world.bottleNotificationShown) {
-      window.world.bottleNotificationShown = false;
-    }
-    
-    window.world.ctx.clearRect(0, 0, window.world.canvas.width, window.world.canvas.height);
-  }
+  clearAllIntervals();
+  resetGameWorld();
   
   if (gameMusic && !gameMusic.paused) {
     gameMusic.pause();
     gameMusic.currentTime = 0;
   }
-  
+}
+
+/**
+ * Initializes and starts a new game
+ */
+function startNewGame() {
   initLevel();
   init();
   startGame();
@@ -408,36 +461,36 @@ function hideBottleNotification() {
  * Resets game state and shows the start screen
  */
 function backToMainMenu() {
+  hideGameElements();
+  showStartScreen();
+  resetGameData();
+}
+
+/**
+ * Hides all game-related UI elements
+ */
+function hideGameElements() {
   document.getElementById('canvas').classList.add('d-none');
   document.getElementById('gameOverScreenLost').style.display = "none";
   document.getElementById('gameOverScreenWin').style.display = "none";
   document.getElementById('game-nav').classList.add('d-none');
   document.getElementById('bottleNotification').classList.add('d-none');
-  
+}
+
+/**
+ * Shows the start screen
+ */
+function showStartScreen() {
   document.getElementById('first-screen').classList.remove('d-none');
-  
+}
+
+/**
+ * Resets all game data and stops music
+ */
+function resetGameData() {
   gameStarted = false;
-  
-  for (let i = 1; i < 9999; i++) {
-    window.clearInterval(i);
-  }
-  
-  if (window.world) {
-    window.world.character.coins = 0;
-    window.world.character.bottles = 0;
-    
-    window.world.statusBarHealth.setPercentageHealth(100);
-    window.world.statusBarBottle.setPercentageBottle(0);
-    window.world.statusBarCoin.setPercentageCoin(0);
-    window.world.statusBarEndboss.setPercentageEndboss(100);
-    window.world.statusBarEndboss.visible = false;
-    
-    if (window.world.bottleNotificationShown) {
-      window.world.bottleNotificationShown = false;
-    }
-    
-    window.world.ctx.clearRect(0, 0, window.world.canvas.width, window.world.canvas.height);
-  }
+  clearAllIntervals();
+  resetGameWorld();
   
   if (gameMusic && !gameMusic.paused) {
     gameMusic.pause();
