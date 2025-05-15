@@ -51,7 +51,9 @@ class CharacterState {
      */
     increaseIdleTimer() {
         if (this.noInteractions()) {
-            this.idleTimer++;
+            this.character.idleTimer++;  
+        } else {
+            this.character.idleTimer = 0; 
         }
     }
 
@@ -61,10 +63,11 @@ class CharacterState {
      */
     noInteractions() {
         return !this.character.world.keyboard.RIGHT &&
-               !this.character.world.keyboard.LEFT &&
+               !this.character.world.keyboard.LEFT && 
                !this.character.world.keyboard.UP &&
                !this.character.world.keyboard.T &&
-               !this.character.isHurt();
+               !this.character.isHurt() &&
+               this.character.y >= 180;
     }
 
     /**

@@ -196,10 +196,14 @@ class CharacterAnimations {
      * Handles idle animations
      */
     idle() {
-        if (this.shortTimeWithoutActions()) {
-            this.character.playAnimation(this.character.IMAGES_IDLE);
-        } else if (this.longTimeWithoutActions()) {
-            this.character.playAnimation(this.character.IMAGES_LONGIDLE);
+        if (!this.character.isAboveGround() && !this.moveToSide() && !this.character.isHurt()) {
+            if (this.longTimeWithoutActions()) {
+                this.character.playAnimation(this.character.IMAGES_LONGIDLE);
+                console.log("Playing long idle, timer: " + this.character.idleTimer); // Debug logging
+            } else if (this.shortTimeWithoutActions()) {
+                this.character.playAnimation(this.character.IMAGES_IDLE);
+                console.log("Playing idle, timer: " + this.character.idleTimer); // Debug logging
+            }
         }
     }
 
@@ -208,7 +212,7 @@ class CharacterAnimations {
      * @returns {boolean}
      */
     longTimeWithoutActions() {
-        return this.character.idleTimer > 10;
+        return this.character.idleTimer >= 10; // Changed from > to >= for reliability
     }
 
     /**
