@@ -74,6 +74,8 @@ class CharacterAnimations {
             } else {
                 this.clearJumpAnimations();
             }
+
+            this.updateJumpState(this.character.speedY);
         }, 20);
     }
 
@@ -81,6 +83,9 @@ class CharacterAnimations {
      * Starts jump up animation
      */
     startJumpUpAnimation() {
+        this.clearJumpAnimations();
+        
+        this.jumpUpCurrentImage = 0;
         this.jumpUpInterval = setInterval(() => {
             this.animateJumpUp();
         }, 35);
@@ -90,6 +95,12 @@ class CharacterAnimations {
      * Starts jump down animation
      */
     startJumpDownAnimation() {
+        if (this.jumpUpInterval) {
+            clearInterval(this.jumpUpInterval);
+            this.jumpUpInterval = null;
+        }
+        
+        this.jumpDownCurrentImage = 0;
         this.jumpDownInterval = setInterval(() => {
             this.animateJumpDown();
         }, 100);
@@ -165,6 +176,14 @@ class CharacterAnimations {
     }
 
     /**
+     * Force restart of jump-up animation (used when bouncing off enemies)
+     */
+    restartJumpUpAnimation() {
+        this.prepareJump();
+        this.startJumpUpAnimation();
+    }
+
+    /**
      * Handles character animations based on state
      */
     animations() {
@@ -230,6 +249,15 @@ class CharacterAnimations {
         if (speedY <= 0 && this.isRising) {
             this.isRising = false;
             this.isFalling = true;
+            
+            if (!this.jumpDownInterval) {
+                this.startJumpDownAnimation();
+            }
+        } else if (speedY > 0 && !this.isRising) {
+            this.isRising = true;
+            this.isFalling = false;
+            
+            this.startJumpUpAnimation();
         }
     }
 }

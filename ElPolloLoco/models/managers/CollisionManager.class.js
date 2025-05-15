@@ -117,7 +117,12 @@ class CollisionManager {
      * @param {MovableObject} enemy - The enemy being jumped on
      */
     handleJumpOnEnemy(enemy) {
-        this.world.character.jump();
+        this.world.character.speedY = 30;
+        
+        this.world.character.animations.prepareJump();
+        this.world.character.animations.isRising = true;
+        this.world.character.animations.jumpUpCurrentImage = 0;
+        
         enemy.energy--;
     }
 }
