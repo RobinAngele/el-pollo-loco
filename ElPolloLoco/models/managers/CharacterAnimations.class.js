@@ -218,10 +218,8 @@ class CharacterAnimations {
         if (!this.character.isAboveGround() && !this.moveToSide() && !this.character.isHurt()) {
             if (this.longTimeWithoutActions()) {
                 this.character.playAnimation(this.character.IMAGES_LONGIDLE);
-                console.log("Playing long idle, timer: " + this.character.idleTimer); // Debug logging
             } else if (this.shortTimeWithoutActions()) {
                 this.character.playAnimation(this.character.IMAGES_IDLE);
-                console.log("Playing idle, timer: " + this.character.idleTimer); // Debug logging
             }
         }
     }
