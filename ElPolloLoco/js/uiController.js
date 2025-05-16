@@ -10,23 +10,10 @@
 let control = false;
 
 /**
- * Flag indicating whether music should be played
- * @type {boolean}
- */
-let playMusic = true;
-
-/**
  * Flag indicating whether the game has been started
  * @type {boolean}
  */
 let gameStarted = false;
-
-/**
- * Audio element for the background music
- * @type {HTMLAudioElement}
- */
-let gameMusic = new Audio('audio/background_music.mp3');
-gameMusic.volume = 0.3;
 
 /**
  * Flag indicating whether the game is in fullscreen mode
@@ -35,52 +22,16 @@ gameMusic.volume = 0.3;
 let fullscreenMode = false;
 
 /**
- * Global flag to enable/disable all sound effects in the game
+ * Share gameStarted status with soundController
  * @type {boolean}
- * @global
  */
-window.SOUNDS_ENABLED = true;
+window.gameStarted = gameStarted;
 
 /**
- * Initialize sound preferences when DOM is fully loaded
+ * Event handler for fullscreen change detection
+ * Handles UI updates when exiting fullscreen mode
  */
-document.addEventListener('DOMContentLoaded', function() {
-    loadSoundPreference();
-});
-
-/**
- * Loads sound preference from localStorage and updates the UI accordingly
- */
-function loadSoundPreference() {
-    const soundState = localStorage.getItem('soundsEnabled');
-    
-    if (soundState === 'false') {
-        playMusic = false;
-        window.SOUNDS_ENABLED = false;
-        updateMuteButtonsDisplay(true);
-    } else {
-        playMusic = true;
-        window.SOUNDS_ENABLED = true;
-        updateMuteButtonsDisplay(false);
-    }
-}
-
-/**
- * Updates the mute button display based on current mute state
- * @param {boolean} isMuted - Whether the sound is currently muted
- */
-function updateMuteButtonsDisplay(isMuted) {
-    const mute = document.getElementById('mute');
-    const unmute = document.getElementById('unmute');
-    const muteInGame = document.getElementById('muteInGame');
-    const unmuteInGame = document.getElementById('unmuteInGame');
-    
-    if (isMuted) {
-        muteIcon(mute, unmute, muteInGame, unmuteInGame);
-    } else {
-        unmuteIcon(mute, unmute, muteInGame, unmuteInGame);
-    }
-}
+document.addEventListener('fullscreenchange', fullscreenchanged);
 
 /**
  * Starts the game, shows the game UI, and initializes the game state
@@ -88,16 +39,16 @@ function updateMuteButtonsDisplay(isMuted) {
 function startGame() {
   showGame();
   gameStarted = true;
+  window.gameStarted = true;
   checkPlayMusic();
   showResponsiveBtn();
-  if (fullscreenMode && gameStarted) {
+  if (fullscreenMode) {
     showCanvasinFull();
   }
 }
 
 /**
  * Event handler for fullscreen change detection
- * Handles UI updates when exiting fullscreen mode
  */
 function fullscreenchanged() {
   if (document.fullscreenElement == null) {
@@ -106,7 +57,6 @@ function fullscreenchanged() {
     fullscreenMode = false;
   }
 }
-document.addEventListener('fullscreenchange', fullscreenchanged);
 
 /**
  * Shows the game canvas and navigation, hides the start screen
@@ -156,15 +106,6 @@ function isTabletDevice() {
 }
 
 /**
- * Plays background music if audio is enabled in game settings
- */
-function checkPlayMusic() {
-  if (playMusic) {
-    gameMusic.play();
-  }
-}
-
-/**
  * Toggles the visibility of the controls instructions panel
  */
 function toggleControlsInstructions() {
@@ -179,93 +120,17 @@ function toggleControlsInstructions() {
 }
 
 /**
- * Gets all sound control button elements
- * @returns {Object} Object containing all mute/unmute buttons
+ * Toggles the visibility of the control instructions
  */
-function getSoundButtons() {
-  return {
-    mute: document.getElementById('mute'),
-    unmute: document.getElementById('unmute'),
-    muteInGame: document.getElementById('muteInGame'),
-    unmuteInGame: document.getElementById('unmuteInGame')
-  };
-}
-
-/**
- * Toggles game sound on/off and updates the UI accordingly
- */
-function muteSound() {
-  const buttons = getSoundButtons();
-  toggleSoundState();
-  updateSoundUI(buttons);
-  saveSoundPreference();
-}
-
-/**
- * Toggles the sound state variables
- */
-function toggleSoundState() {
-  playMusic = !playMusic;
-  window.SOUNDS_ENABLED = playMusic;
-}
-
-/**
- * Updates the sound-related UI based on current sound state
- * @param {Object} buttons - Object containing sound control buttons
- */
-function updateSoundUI(buttons) {
-  if (playMusic) {
-    if (gameStarted) gameMusic.play();
-    unmuteIcon(buttons.mute, buttons.unmute, buttons.muteInGame, buttons.unmuteInGame);
+function showControl() {
+  let controlInstructions = document.getElementById('controller-exp');
+  if (!control) {
+    controlInstructions.classList.remove('d-none');
+    control = true;
   } else {
-    gameMusic.pause();
-    muteIcon(buttons.mute, buttons.unmute, buttons.muteInGame, buttons.unmuteInGame);
+    controlInstructions.classList.add('d-none');
+    control = false;
   }
-}
-
-/**
- * Saves sound preference to localStorage
- */
-function saveSoundPreference() {
-  localStorage.setItem('soundsEnabled', playMusic.toString());
-}
-
-/**
- * Updates UI to show muted icons
- * @param {HTMLElement} mute - The mute button in main menu
- * @param {HTMLElement} unmute - The unmute button in main menu
- * @param {HTMLElement} muteInGame - The mute button in game
- * @param {HTMLElement} unmuteInGame - The unmute button in game
- */
-function muteIcon(mute, unmute, muteInGame, unmuteInGame) {
-  mute.classList.add('d-none');
-  unmute.classList.remove('d-none');
-  muteInGame.classList.add('d-none');
-  unmuteInGame.classList.remove('d-none');
-}
-
-/**
- * Plays a sound if sounds are enabled
- * @param {HTMLAudioElement} sound - The sound to play
- */
-function playSound(sound) {
-  if (window.SOUNDS_ENABLED) {
-      sound.play();
-  }
-}
-
-/**
- * Updates UI to show unmuted icons
- * @param {HTMLElement} mute - The mute button in main menu
- * @param {HTMLElement} unmute - The unmute button in main menu
- * @param {HTMLElement} muteInGame - The mute button in game
- * @param {HTMLElement} unmuteInGame - The unmute button in game
- */
-function unmuteIcon(mute, unmute, muteInGame, unmuteInGame) {
-  mute.classList.remove('d-none');
-  unmute.classList.add('d-none');
-  muteInGame.classList.remove('d-none');
-  unmuteInGame.classList.add('d-none');
 }
 
 /**
@@ -368,20 +233,6 @@ function exitFullscreen() {
 }
 
 /**
- * Toggles the visibility of the control instructions
- */
-function showControl() {
-  let controlInstructions = document.getElementById('controller-exp');
-  if (!control) {
-    controlInstructions.classList.remove('d-none');
-    control = true;
-  } else {
-    controlInstructions.classList.add('d-none');
-    control = false;
-  }
-}
-
-/**
  * Clears all interval timers in the game
  */
 function clearAllIntervals() {
@@ -452,13 +303,10 @@ function hideGameScreens() {
  */
 function resetGameState() {
   gameStarted = false;
+  window.gameStarted = false;
   clearAllIntervals();
   resetGameWorld();
-  
-  if (gameMusic && !gameMusic.paused) {
-    gameMusic.pause();
-    gameMusic.currentTime = 0;
-  }
+  stopMusic();
 }
 
 /**
@@ -517,11 +365,8 @@ function showStartScreen() {
  */
 function resetGameData() {
   gameStarted = false;
+  window.gameStarted = false;
   clearAllIntervals();
   resetGameWorld();
-  
-  if (gameMusic && !gameMusic.paused) {
-    gameMusic.pause();
-    gameMusic.currentTime = 0;
-  }
+  stopMusic();
 }
