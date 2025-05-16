@@ -142,12 +142,31 @@ function setFullscreen() {
     enterFullscreen(fullscreenCont);
     showCanvasinFull();
     showNavinFull();
+    updateGameOverScreensForFullscreen(true);
     fullscreenMode = true;
   } else {
     exitFullscreen();
     closeFullCanvas();
     closeFullNav();
+    updateGameOverScreensForFullscreen(false);
     fullscreenMode = false;
+  }
+}
+
+/**
+ * Updates game over screens for fullscreen mode
+ * @param {boolean} isFullscreen - Whether fullscreen is being enabled or disabled
+ */
+function updateGameOverScreensForFullscreen(isFullscreen) {
+  const gameOverScreenLost = document.getElementById('gameOverScreenLost');
+  const gameOverScreenWin = document.getElementById('gameOverScreenWin');
+  
+  if (isFullscreen) {
+    gameOverScreenLost.classList.add('fullscreen-overlay');
+    gameOverScreenWin.classList.add('fullscreen-overlay');
+  } else {
+    gameOverScreenLost.classList.remove('fullscreen-overlay');
+    gameOverScreenWin.classList.remove('fullscreen-overlay');
   }
 }
 

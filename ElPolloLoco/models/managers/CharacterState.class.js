@@ -19,6 +19,12 @@ class CharacterState {
      * @type {boolean}
      */
     exchangeCoinBottleActive = false;
+    
+    /**
+     * Sound effect for exchanging coins for bottles
+     * @type {Audio}
+     */
+    exchange_sound = new Audio('audio/coin_exchange.mp3');
 
     /**
      * @param {Character} character - Reference to the character
@@ -103,8 +109,8 @@ class CharacterState {
         this.character.bottles++;
         this.updateStatusBars();
         
-        if (window.SOUNDS_ENABLED && this.character.world) {
-            this.character.world.exchange_sound.play();
+        if (window.SOUNDS_ENABLED) {
+            this.exchange_sound.play();
         }
     }
     

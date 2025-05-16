@@ -212,6 +212,41 @@ nav {
     height: 100%;
 }
 
+.game-over-screen-cont img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Fullscreen game over overlay styles */
+.fullscreen-overlay {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 10000;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.fullscreen-overlay img {
+    max-height: 90vh;
+    max-width: 90vw;
+    width: auto;
+    height: auto;
+}
+
+.fullscreen-overlay .game-over-buttons {
+    position: absolute;
+    bottom: 10%;
+    display: flex;
+    gap: 20px;
+    z-index: 10001;
+}
+
 .game-over-buttons {
     position: absolute;
     bottom: 50px;
