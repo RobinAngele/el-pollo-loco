@@ -197,12 +197,17 @@ class Endboss extends MovableObject {
      * Handles all animations and state changes
      */
     animate() {
+        this.setupAnimationInterval();
+        this.setupCooldownInterval();
+    }
+
+    /**
+     * Sets up the main animation interval based on boss state
+     */
+    setupAnimationInterval() {
         setInterval(() => {
             if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT);
-                if (window.SOUNDS_ENABLED) {
-                    this.getHitSound.play();
-                }
+                this.playHurtAnimation();
             } else if (this.isJumping && !this.isDead()) {
                 this.playAnimation(this.IMAGES_JUMP);
             } else if (this.isConcentrating && !this.isDead()) {
@@ -212,13 +217,26 @@ class Endboss extends MovableObject {
                 this.moveAndAttack();
             } else if (!this.firstContact) {
                 this.playAnimation(this.IMAGES_IDLE);
-            } else {
-                if (this.isDead()) {
-                    this.playAnimation(this.IMAGES_DEAD);
-                }
+            } else if (this.isDead()) {
+                this.playAnimation(this.IMAGES_DEAD);
             }
         }, 200);
+    }
 
+    /**
+     * Plays hurt animation with sound
+     */
+    playHurtAnimation() {
+        this.playAnimation(this.IMAGES_HURT);
+        if (window.SOUNDS_ENABLED) {
+            this.getHitSound.play();
+        }
+    }
+
+    /**
+     * Sets up cooldown timer interval
+     */
+    setupCooldownInterval() {
         setInterval(() => {
             if (this.jumpCooldown > 0) {
                 this.jumpCooldown--;
@@ -269,24 +287,42 @@ class Endboss extends MovableObject {
      * Performs concentration attack that spawns baby chickens
      */
     concentrateAndSpawnChicken() {
+        this.startConcentration();
+        setTimeout(() => this.spawnBabyChickens(), 1500);
+    }
+
+    /**
+     * Starts the concentration state and plays sound
+     */
+    startConcentration() {
         this.isConcentrating = true;
         this.concentrationCooldown = 8;
         if (window.SOUNDS_ENABLED) {
             this.concentrationSound.play();
         }
-        
-        setTimeout(() => {
-            if (this.world && !this.isDead()) {
-                const numChickens = 2 + Math.floor(Math.random() * 3);
-                for (let i = 0; i < numChickens; i++) {
-                    const babyChicken = new BabyChicken();
-                    babyChicken.x = this.x;
-                    babyChicken.y = 380;
-                    this.world.level.enemies.push(babyChicken);
-                }
+    }
+
+    /**
+     * Spawns baby chickens if the boss is still alive
+     */
+    spawnBabyChickens() {
+        if (this.world && !this.isDead()) {
+            const numChickens = 2 + Math.floor(Math.random() * 3);
+            for (let i = 0; i < numChickens; i++) {
+                this.createBabyChicken();
             }
-            this.isConcentrating = false;
-        }, 1500);
+        }
+        this.isConcentrating = false;
+    }
+
+    /**
+     * Creates a single baby chicken and adds it to the world
+     */
+    createBabyChicken() {
+        const babyChicken = new BabyChicken();
+        babyChicken.x = this.x;
+        babyChicken.y = 380;
+        this.world.level.enemies.push(babyChicken);
     }
 
     /**

@@ -245,17 +245,31 @@ class CharacterAnimations {
      */
     updateJumpState(speedY) {
         if (speedY <= 0 && this.isRising) {
-            this.isRising = false;
-            this.isFalling = true;
-            
-            if (!this.jumpDownInterval) {
-                this.startJumpDownAnimation();
-            }
+            this.handleFallingTransition();
         } else if (speedY > 0 && !this.isRising) {
-            this.isRising = true;
-            this.isFalling = false;
-            
-            this.startJumpUpAnimation();
+            this.handleRisingTransition();
         }
+    }
+
+    /**
+     * Handles transition to falling state
+     */
+    handleFallingTransition() {
+        this.isRising = false;
+        this.isFalling = true;
+        
+        if (!this.jumpDownInterval) {
+            this.startJumpDownAnimation();
+        }
+    }
+
+    /**
+     * Handles transition to rising state
+     */
+    handleRisingTransition() {
+        this.isRising = true;
+        this.isFalling = false;
+        
+        this.startJumpUpAnimation();
     }
 }

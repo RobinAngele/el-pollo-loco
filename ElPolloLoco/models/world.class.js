@@ -144,19 +144,36 @@ class World {
         this.canvas = canvas;
         this.keyboard = keyboard;
         
-        // Initialize managers
+        this.initializeManagers();
+        this.setupGameEnvironment();
+        this.loadIcons();
+    }
+
+    /**
+     * Initialize all game managers
+     */
+    initializeManagers() {
         this.collisionManager = new CollisionManager(this);
         this.itemManager = new ItemManager(this);
         this.bottleManager = new BottleManager(this);
         this.renderManager = new RenderManager(this);
         this.gameStateManager = new GameStateManager(this);
-        
+    }
+
+    /**
+     * Setup the game environment and start game loops
+     */
+    setupGameEnvironment() {
         this.renderManager.draw();
         this.setWorld();
         this.run();
         this.gameStateManager.checkForGameOver();
-        
-        // Load icons
+    }
+
+    /**
+     * Load status bar icons
+     */
+    loadIcons() {
         this.endbossIcon.src = 'img/7_statusbars/3_icons/icon_health_endboss.png';
         this.coinIcon.src = 'img/7_statusbars/3_icons/icon_coin.png';
         this.bottleIcon.src = 'img/7_statusbars/3_icons/icon_salsa_bottle.png';

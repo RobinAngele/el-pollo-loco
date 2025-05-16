@@ -122,16 +122,25 @@ function showGame() {
 
 /**
  * Shows responsive buttons for mobile devices when appropriate
- * Also shows controls on tablet devices based on screen size or touch capability
  */
 function showResponsiveBtn() {
-  let mobileControl = document.getElementById('mobile-cont');
+  const mobileControl = document.getElementById('mobile-cont');
   
-  if (window.innerHeight < 480 && gameStarted) {
-    mobileControl.classList.remove('d-none');
-  } else if (gameStarted && (window.innerWidth <= 1024 || isTabletDevice())) {
+  if (shouldShowMobileControls()) {
     mobileControl.classList.remove('d-none');
   }
+}
+
+/**
+ * Determines if mobile controls should be shown based on device and screen size
+ * @returns {boolean} True if mobile controls should be displayed
+ */
+function shouldShowMobileControls() {
+  return gameStarted && (
+    window.innerHeight < 480 || 
+    window.innerWidth <= 1024 || 
+    isTabletDevice()
+  );
 }
 
 /**
@@ -184,13 +193,27 @@ function getSoundButtons() {
 
 /**
  * Toggles game sound on/off and updates the UI accordingly
- * Saves the user's preference to localStorage for persistence between sessions
  */
 function muteSound() {
   const buttons = getSoundButtons();
+  toggleSoundState();
+  updateSoundUI(buttons);
+  saveSoundPreference();
+}
+
+/**
+ * Toggles the sound state variables
+ */
+function toggleSoundState() {
   playMusic = !playMusic;
   window.SOUNDS_ENABLED = playMusic;
-  
+}
+
+/**
+ * Updates the sound-related UI based on current sound state
+ * @param {Object} buttons - Object containing sound control buttons
+ */
+function updateSoundUI(buttons) {
   if (playMusic) {
     if (gameStarted) gameMusic.play();
     unmuteIcon(buttons.mute, buttons.unmute, buttons.muteInGame, buttons.unmuteInGame);
@@ -198,7 +221,12 @@ function muteSound() {
     gameMusic.pause();
     muteIcon(buttons.mute, buttons.unmute, buttons.muteInGame, buttons.unmuteInGame);
   }
-  
+}
+
+/**
+ * Saves sound preference to localStorage
+ */
+function saveSoundPreference() {
   localStorage.setItem('soundsEnabled', playMusic.toString());
 }
 

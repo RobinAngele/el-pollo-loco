@@ -137,24 +137,45 @@ class GameStateManager {
      * Removes dead baby chickens from the game
      */
     cleanupBabyChickens() {
+        this.cleanupFromBabyChickensArray();
+        this.cleanupFromEnemiesArray();
+    }
+
+    /**
+     * Removes dead baby chickens from the babyChickens array
+     */
+    cleanupFromBabyChickensArray() {
         for (let i = this.world.babyChickens.length - 1; i >= 0; i--) {
             const chicken = this.world.babyChickens[i];
             if (chicken.isDead() && chicken.defeated) {
                 this.world.babyChickens.splice(i, 1);
             }
         }
-        
+    }
+
+    /**
+     * Removes dead baby chickens from the enemies array
+     */
+    cleanupFromEnemiesArray() {
         for (let i = this.world.level.enemies.length - 1; i >= 0; i--) {
             const enemy = this.world.level.enemies[i];
             if (enemy instanceof BabyChicken && enemy.isDead() && enemy.defeated) {
-                setTimeout(() => {
-                    const index = this.world.level.enemies.indexOf(enemy);
-                    if (index !== -1) {
-                        this.world.level.enemies.splice(index, 1);
-                    }
-                }, 1000);
+                this.scheduleEnemyRemoval(enemy);
             }
         }
+    }
+
+    /**
+     * Schedules an enemy for removal after a delay
+     * @param {MovableObject} enemy - The enemy to remove
+     */
+    scheduleEnemyRemoval(enemy) {
+        setTimeout(() => {
+            const index = this.world.level.enemies.indexOf(enemy);
+            if (index !== -1) {
+                this.world.level.enemies.splice(index, 1);
+            }
+        }, 1000);
     }
 
     /**
@@ -168,10 +189,24 @@ class GameStateManager {
 
     /**
      * Clears all interval timers to prevent memory leaks
+     * Uses a batch approach to optimize performance
      */
     clearAllIntervals() {
         const MAX_INTERVAL_ID = 9999;
-        for (let i = 1; i < MAX_INTERVAL_ID; i++) {
+        const BATCH_SIZE = 1000;
+        
+        for (let batchStart = 1; batchStart < MAX_INTERVAL_ID; batchStart += BATCH_SIZE) {
+            this.clearIntervalBatch(batchStart, batchStart + BATCH_SIZE);
+        }
+    }
+    
+    /**
+     * Clears a batch of intervals within a given range
+     * @param {number} start - Starting interval ID
+     * @param {number} end - Ending interval ID (exclusive)
+     */
+    clearIntervalBatch(start, end) {
+        for (let i = start; i < end; i++) {
             window.clearInterval(i);
         }
     }

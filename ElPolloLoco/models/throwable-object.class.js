@@ -58,28 +58,49 @@ class ThrowableObjects extends MovableObject {
         this.speedY = 30;
         this.applyGravity();
         
-        // Track if animation intervals have been cleared
+        const animationInterval = this.setupAnimationInterval();
+        const collisionInterval = this.setupCollisionInterval();
+        
+        // Store intervals for cleanup
+        this.intervals = { animationInterval, collisionInterval };
+    }
+    
+    /**
+     * Sets up animation interval for bottle rotation and splash
+     * @returns {number} Interval ID
+     */
+    setupAnimationInterval() {
         let animationCleared = false;
         
-        const animationInterval = setInterval(() => {
+        return setInterval(() => {
             if (this.hasHit) {
                 this.playAnimation(this.IMG_SPLASH);
-                
-                // Check if splash animation has completed
-                if (this.currentImage >= this.IMG_SPLASH.length * 2 && !animationCleared) {
-                    clearInterval(animationInterval);
-                    clearInterval(collisionInterval);
-                    animationCleared = true;
-                }
+                this.checkSplashAnimationComplete(animationCleared);
             } else {
                 this.playAnimation(this.IMG_BOTTLE);
                 this.x += this.otherDirection ? -20 : 20;
             }
         }, 50);
-
-        // Check for ground collision or other stopping conditions
-        const collisionInterval = setInterval(() => {
-            // Check if bottle has hit the ground (y position is at the bottom of the screen)
+    }
+    
+    /**
+     * Checks if splash animation is complete
+     * @param {boolean} animationCleared - Reference to animation cleared flag
+     */
+    checkSplashAnimationComplete(animationCleared) {
+        if (this.currentImage >= this.IMG_SPLASH.length * 2 && !animationCleared) {
+            clearInterval(this.intervals.animationInterval);
+            clearInterval(this.intervals.collisionInterval);
+            animationCleared = true;
+        }
+    }
+    
+    /**
+     * Sets up collision detection interval
+     * @returns {number} Interval ID
+     */
+    setupCollisionInterval() {
+        return setInterval(() => {
             if ((this.y > 350 || !this.isAboveGround()) && !this.hasHit) {
                 this.explode();
             }
