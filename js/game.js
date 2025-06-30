@@ -90,5 +90,58 @@ function setupKeyboardControls() {
     });
 }
 
+/**
+ * Handles the complete game start sequence with proper error handling
+ * This function ensures all dependencies are loaded before starting the game
+ */
+function startGameSequence() {
+    try {
+        if (typeof initLevel !== 'function') {
+            console.error('initLevel function not found');
+            return;
+        }
+        if (typeof init !== 'function') {
+            console.error('init function not found');
+            return;
+        }
+        if (typeof startGame !== 'function') {
+            console.error('startGame function not found');
+            return;
+        }
+
+        initLevel();
+        
+        init();
+        
+        startGame();
+        
+    } catch (error) {
+        console.error('Error starting game:', error);
+        setTimeout(() => {
+            try {
+                initLevel();
+                init();
+                startGame();
+            } catch (retryError) {
+                console.error('Retry failed:', retryError);
+            }
+        }, 100);
+    }
+}
+
+/**
+ * Ensure all scripts are loaded before allowing game start
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    window.startGameSequence = startGameSequence;
+    
+    const requiredClasses = ['World', 'Keyboard', 'Level', 'Character'];
+    const missingClasses = requiredClasses.filter(className => typeof window[className] === 'undefined');
+    
+    if (missingClasses.length > 0) {
+        console.warn('Missing classes:', missingClasses);
+    }
+});
+
 
 

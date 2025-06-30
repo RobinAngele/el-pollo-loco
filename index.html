@@ -42,6 +42,11 @@
 
     <title>El Pollo Loco</title>
 
+    <script>
+        window.addEventListener('error', function(e) {
+            console.error('Script error:', e.filename, e.lineno, e.message);
+        });
+    </script>
 
 </head>
 
@@ -120,7 +125,7 @@
                 </div>
 
                 <div class="start-button-cont">
-                    <img class="start-button-img" onclick="initLevel(), init(), startGame()" src="img/icons/start.png" alt="">
+                    <img class="start-button-img" onclick="startGameSequence()" src="img/icons/start.png" alt="">
                 </div>
 
                 <nav>
