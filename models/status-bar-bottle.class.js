@@ -50,18 +50,7 @@ class StatusBarBottle extends DrawableObjects{
      * @returns {number} Index of the image to use
      */
     resolveImageIndexBottle(){
-        if(this.percentageBottle == 5){
-            return 0;
-        }else if(this.percentageBottle == 4){
-            return 1;
-        }else if(this.percentageBottle == 3){
-            return 2;
-        }else if(this.percentageBottle == 2){
-            return 3;
-        }else if(this.percentageBottle == 1){
-            return 4;
-        }else{
-            return 5;
-        }
+        const bottleIndexMap = {5: 0, 4: 1, 3: 2, 2: 3, 1: 4};
+        return bottleIndexMap[this.percentageBottle] ?? 5;
     }
 }

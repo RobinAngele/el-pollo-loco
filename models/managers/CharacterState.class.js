@@ -108,7 +108,6 @@ class CharacterState {
         this.character.coins -= 20;
         this.character.bottles++;
         this.updateStatusBars();
-        
         if (window.SOUNDS_ENABLED) {
             this.exchange_sound.play();
         }

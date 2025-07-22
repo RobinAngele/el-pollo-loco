@@ -95,7 +95,6 @@ class CharacterAnimations {
      */
     startJumpUpAnimation() {
         this.clearJumpAnimations();
-        
         this.jumpUpCurrentImage = 0;
         this.jumpUpInterval = setInterval(() => {
             this.animateJumpUp();
@@ -277,7 +276,6 @@ class CharacterAnimations {
     handleFallingTransition() {
         this.isRising = false;
         this.isFalling = true;
-        
         if (!this.jumpDownInterval) {
             this.startJumpDownAnimation();
         }
@@ -289,7 +287,6 @@ class CharacterAnimations {
     handleRisingTransition() {
         this.isRising = true;
         this.isFalling = false;
-        
         this.startJumpUpAnimation();
     }
 }

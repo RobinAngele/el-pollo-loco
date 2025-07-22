@@ -68,7 +68,6 @@ class ThrowableObjects extends MovableObject {
      */
     setupAnimationInterval() {
         let animationCleared = false;
-        
         return setInterval(() => {
             if (this.hasHit) {
                 this.playAnimation(this.IMG_SPLASH);

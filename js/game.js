@@ -51,12 +51,10 @@ function setupTouchControls() {
  */
 function setupTouchButton(buttonId, keyProperty) {
     const button = document.getElementById(buttonId);
-    
     button.addEventListener('touchstart', (e) => {
         e.preventDefault();
         keyboard[keyProperty] = true;
     });
-    
     button.addEventListener('touchend', (e) => {
         e.preventDefault();
         keyboard[keyProperty] = false;
@@ -106,41 +104,53 @@ function addKeyEventListeners(keyMap) {
 
 /**
  * Handles the complete game start sequence with proper error handling
- * This function ensures all dependencies are loaded before starting the game
  */
 function startGameSequence() {
     try {
-        if (typeof initLevel !== 'function') {
-            console.error('initLevel function not found');
-            return;
-        }
-        if (typeof init !== 'function') {
-            console.error('init function not found');
-            return;
-        }
-        if (typeof startGame !== 'function') {
-            console.error('startGame function not found');
-            return;
-        }
-
-        initLevel();
-        
-        init();
-        
-        startGame();
-        
+        if (!validateGameFunctions()) return;
+        executeGameStart();
     } catch (error) {
-        console.error('Error starting game:', error);
-        setTimeout(() => {
-            try {
-                initLevel();
-                init();
-                startGame();
-            } catch (retryError) {
-                console.error('Retry failed:', retryError);
-            }
-        }, 100);
+        handleGameStartError(error);
     }
+}
+
+/**
+ * Validates that all required game functions exist
+ * @returns {boolean} True if all functions are available
+ */
+function validateGameFunctions() {
+    const requiredFunctions = ['initLevel', 'init', 'startGame'];
+    for (const funcName of requiredFunctions) {
+        if (typeof window[funcName] !== 'function') {
+            console.error(`${funcName} function not found`);
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Executes the game start sequence
+ */
+function executeGameStart() {
+    initLevel();
+    init();
+    startGame();
+}
+
+/**
+ * Handles errors during game start with retry logic
+ * @param {Error} error - The error that occurred
+ */
+function handleGameStartError(error) {
+    console.error('Error starting game:', error);
+    setTimeout(() => {
+        try {
+            executeGameStart();
+        } catch (retryError) {
+            console.error('Retry failed:', retryError);
+        }
+    }, 100);
 }
 
 /**

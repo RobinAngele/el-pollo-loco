@@ -116,7 +116,6 @@ class ItemManager {
             this.world.character.bottles++;
             this.updateStatusBarBottle();
             this.world.statusBarCoin.setPercentageCoin(this.world.character.coins);
-            
             if (window.SOUNDS_ENABLED) {
                 this.exchange_sound.play();
             }

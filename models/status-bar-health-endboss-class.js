@@ -56,19 +56,12 @@ class StatusBarEndboss extends DrawableObjects {
      * @returns {number} Index of the image to use
      */
     resolveImageIndexEndboss() {
-        if(this.percentageEndboss == 100) {
-            return 5;
-        } else if(this.percentageEndboss > 80) {
-            return 4;
-        } else if(this.percentageEndboss > 60) {
-            return 3;
-        } else if(this.percentageEndboss > 40) {
-            return 2;
-        } else if(this.percentageEndboss > 20) {
-            return 1;
-        } else {
-            return 0;
-        }
+        if(this.percentageEndboss == 100) return 5;
+        if(this.percentageEndboss > 80) return 4;
+        if(this.percentageEndboss > 60) return 3;
+        if(this.percentageEndboss > 40) return 2;
+        if(this.percentageEndboss > 20) return 1;
+        return 0;
     }
 
     /**

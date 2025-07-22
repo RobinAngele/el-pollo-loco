@@ -43,20 +43,38 @@ class GameStateManager {
      * @param {string} outcome - 'win' or 'lost'
      */
     hideBottleNotificationAndShowGameOver(outcome) {
-        // Hide bottle notification if shown
+        this.hideBottleNotification();
+        this.showGameOverScreen(outcome);
+        this.endGameSession();
+    }
+
+    /**
+     * Hides the bottle notification if visible
+     */
+    hideBottleNotification() {
         const notification = document.getElementById('bottleNotification');
         if (notification) {
             notification.classList.add('d-none');
         }
         this.bottleNotificationShown = false;
-        
-        // Show appropriate game over screen
+    }
+
+    /**
+     * Shows the appropriate game over screen
+     * @param {string} outcome - 'win' or 'lost'
+     */
+    showGameOverScreen(outcome) {
         if (outcome === 'lost') {
             this.showYouLostScreen();
         } else {
-            this.showGameOverScreen();
+            this.showYouWinScreen();
         }
-        
+    }
+
+    /**
+     * Ends the game session
+     */
+    endGameSession() {
         this.clearAllIntervals();
         gameMusic.pause();
     }
@@ -73,7 +91,7 @@ class GameStateManager {
     /**
      * Shows the game over screen when player wins
      */
-    showGameOverScreen() {
+    showYouWinScreen() {
         let win = document.getElementById('gameOverScreenWin');
         win.style.display = "flex";
         win.style.zIndex = "999";
@@ -194,7 +212,6 @@ class GameStateManager {
     clearAllIntervals() {
         const MAX_INTERVAL_ID = 9999;
         const BATCH_SIZE = 1000;
-        
         for (let batchStart = 1; batchStart < MAX_INTERVAL_ID; batchStart += BATCH_SIZE) {
             this.clearIntervalBatch(batchStart, batchStart + BATCH_SIZE);
         }

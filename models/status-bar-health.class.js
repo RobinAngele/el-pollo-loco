@@ -50,18 +50,11 @@ class StatusBarHealth extends DrawableObjects{
      * @returns {number} Index of the image to use
      */
     resolveImageIndexHealth(){
-        if(this.percentageHealth == 100){
-            return 5;
-        }else if(this.percentageHealth > 80){
-            return 4;
-        }else if(this.percentageHealth > 60){
-            return 3;
-        }else if(this.percentageHealth > 40){
-            return 2;
-        }else if(this.percentageHealth > 20){
-            return 1;
-        }else{
-            return 0;
-        }
+        if(this.percentageHealth == 100) return 5;
+        if(this.percentageHealth > 80) return 4;
+        if(this.percentageHealth > 60) return 3;
+        if(this.percentageHealth > 40) return 2;
+        if(this.percentageHealth > 20) return 1;
+        return 0;
     }
 }

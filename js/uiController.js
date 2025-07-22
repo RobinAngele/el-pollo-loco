@@ -75,7 +75,6 @@ function showGame() {
  */
 function showResponsiveBtn() {
   const mobileControl = document.getElementById('mobile-cont');
-  
   if (shouldShowMobileControls()) {
     mobileControl.classList.remove('d-none');
   }
@@ -101,7 +100,6 @@ function isTabletDevice() {
   const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   const tabletSized = window.innerWidth >= 600 && window.innerWidth <= 1024;
   const tabletUA = /iPad|Android(?!.*Mobile)|Tablet/i.test(navigator.userAgent);
-  
   return hasTouch && (tabletSized || tabletUA);
 }
 
@@ -176,7 +174,6 @@ function disableFullscreen() {
 function updateGameOverScreensForFullscreen(isFullscreen) {
   const gameOverScreenLost = document.getElementById('gameOverScreenLost');
   const gameOverScreenWin = document.getElementById('gameOverScreenWin');
-  
   if (isFullscreen) {
     gameOverScreenLost.classList.add('fullscreen-overlay');
     gameOverScreenWin.classList.add('fullscreen-overlay');
@@ -238,7 +235,6 @@ function showCanvasinFull() {
   let canvas = document.getElementById('canvas');
   let canvasCont = document.getElementById('canvas-cont');
   let headline = document.getElementById('headline');
-
   canvasCont.style.maxWidth = 'none';
   canvasCont.style.maxHeight = 'none';
   canvas.style.width = '100%';
@@ -316,20 +312,41 @@ function backToMainMenu() {
  * @param {boolean} returnToMenu - If true, returns to main menu; if false, restarts game
  */
 function handleGameNavigation(returnToMenu) {
+  resetGameState();
+  if (returnToMenu) {
+    showMainMenu();
+  } else {
+    restartGameSession();
+  }
+}
+
+/**
+ * Resets the game state and UI
+ */
+function resetGameState() {
   hideGameScreens();
   gameStarted = false;
   window.gameStarted = false;
   clearAllIntervals();
   resetGameWorld();
   stopMusic();
-  if (returnToMenu) {
-    document.getElementById('first-screen').classList.remove('d-none');
-    hideGameElements();
-  } else {
-    initLevel();
-    init();
-    startGame();
-  }
+}
+
+/**
+ * Shows the main menu and hides game elements
+ */
+function showMainMenu() {
+  document.getElementById('first-screen').classList.remove('d-none');
+  hideGameElements();
+}
+
+/**
+ * Restarts a new game session
+ */
+function restartGameSession() {
+  initLevel();
+  init();
+  startGame();
 }
 
 /**

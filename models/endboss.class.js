@@ -216,16 +216,25 @@ class Endboss extends MovableObject {
     handleAnimationState() {
         if (this.isHurt()) {
             this.playHurtAnimation();
-        } else if (this.isJumping && !this.isDead()) {
-            this.playAnimation(this.IMAGES_JUMP);
-        } else if (this.isConcentrating && !this.isDead()) {
-            this.playAnimation(this.IMAGES_CONCENTRATION);
-        } else if (this.firstContact && !this.isDead()) {
-            this.handleFightOrIdleAnimation();
-        } else if (!this.firstContact) {
-            this.playAnimation(this.IMAGES_IDLE);
         } else if (this.isDead()) {
             this.playAnimation(this.IMAGES_DEAD);
+        } else {
+            this.handleAliveAnimations();
+        }
+    }
+
+    /**
+     * Handles animations for living boss
+     */
+    handleAliveAnimations() {
+        if (this.isJumping) {
+            this.playAnimation(this.IMAGES_JUMP);
+        } else if (this.isConcentrating) {
+            this.playAnimation(this.IMAGES_CONCENTRATION);
+        } else if (this.firstContact) {
+            this.handleFightOrIdleAnimation();
+        } else {
+            this.playAnimation(this.IMAGES_IDLE);
         }
     }
 

@@ -60,8 +60,6 @@ class CollisionManager {
         this.world.character.hit(20);
         this.world.character.idleTimer = 0;
         this.world.statusBarHealth.setPercentageHealth(this.world.character.energy);
-        
-        // Set character as invincible for a short duration
         this.characterInvincible = true;
         this.lastHitTime = new Date().getTime();
     }
@@ -118,11 +116,9 @@ class CollisionManager {
      */
     handleJumpOnEnemy(enemy) {
         this.world.character.speedY = 30;
-        
         this.world.character.animations.prepareJump();
         this.world.character.animations.isRising = true;
         this.world.character.animations.jumpUpCurrentImage = 0;
-        
         enemy.energy--;
     }
 }

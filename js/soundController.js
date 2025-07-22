@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function loadSoundPreference() {
     const soundState = localStorage.getItem('soundsEnabled');
-    
     if (soundState === 'false') {
         playMusic = false;
         window.SOUNDS_ENABLED = false;
@@ -56,7 +55,6 @@ function updateMuteButtonsDisplay(isMuted) {
     const unmute = document.getElementById('unmute');
     const muteInGame = document.getElementById('muteInGame');
     const unmuteInGame = document.getElementById('unmuteInGame');
-    
     if (isMuted) {
         muteIcon(mute, unmute, muteInGame, unmuteInGame);
     } else {

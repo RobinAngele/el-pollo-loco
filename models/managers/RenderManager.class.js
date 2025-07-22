@@ -21,11 +21,9 @@ class RenderManager {
      */
     draw() {
         this.world.ctx.clearRect(0, 0, this.world.canvas.width, this.world.canvas.height);
-        
         this.drawBackgroundElements();
         this.drawStatusBars();
         this.drawCharacter();
-
         let self = this;
         requestAnimationFrame(function () {
             self.draw();
@@ -55,7 +53,6 @@ class RenderManager {
         this.addTopMap(this.world.statusBarBottle);
         this.addTopMap(this.world.statusBarCoin);
         this.addTopMap(this.world.statusBarEndboss);
-
         if (this.world.statusBarEndboss.visible) {
             this.world.ctx.drawImage(this.world.endbossIcon, 495, 10, 60, 60);
         }
