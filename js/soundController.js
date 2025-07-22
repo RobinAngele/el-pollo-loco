@@ -179,7 +179,9 @@ function isMusicEnabled() {
     return playMusic;
 }
 
-// Make functions available globally
+/**
+ * Make functions available globally
+ */
 window.muteSound = muteSound;
 window.playSound = playSound;
 window.checkPlayMusic = checkPlayMusic;

@@ -108,10 +108,9 @@ class ThrowableObjects extends MovableObject {
      * Called both when hitting ground and when hitting enemies
      */
     explode() {
-        if (!this.hasHit) {  // Only trigger once
+        if (!this.hasHit) {
             this.hasHit = true;
-            this.currentImage = 0; // Reset animation frame for splash
-            // Stop all movement when exploding
+            this.currentImage = 0;
             this.speedY = 0;
         }
     }

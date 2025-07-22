@@ -98,7 +98,7 @@ class CharacterState {
                this.character.world.keyboard.B && 
                !this.exchangeCoinBottleActive &&
                this.character.coins >= 20 && 
-               this.character.bottles < 5; // Using fixed value for MAX_BOTTLES
+               this.character.bottles < 5;
     }
     
     /**

@@ -248,7 +248,7 @@ class CharacterAnimations {
      * @returns {boolean}
      */
     longTimeWithoutActions() {
-        return this.character.idleTimer >= 10; // Changed from > to >= for reliability
+        return this.character.idleTimer >= 10;
     }
 
     /**

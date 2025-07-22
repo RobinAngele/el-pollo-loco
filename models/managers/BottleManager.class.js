@@ -102,7 +102,6 @@ class BottleManager {
      * Removes bottles that are out of bounds
      */
     handleBottleCleanup() {
-        // Modified to account for bottles thrown in either direction
         this.world.throwableObject = this.world.throwableObject.filter(bottle => 
             bottle.y <= 500 && 
             bottle.x >= -500 && 
