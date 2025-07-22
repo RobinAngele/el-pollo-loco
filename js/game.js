@@ -153,14 +153,4 @@ function handleGameStartError(error) {
  */
 document.addEventListener('DOMContentLoaded', function() {
     window.startGameSequence = startGameSequence;
-    
-    const requiredClasses = ['World', 'Keyboard', 'Level', 'Character'];
-    const missingClasses = requiredClasses.filter(className => typeof window[className] === 'undefined');
-    
-    if (missingClasses.length > 0) {
-        console.warn('Missing classes:', missingClasses);
-    }
 });
-
-
-
