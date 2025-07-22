@@ -75,13 +75,8 @@ function setupKeyboardControls() {
  */
 function getKeyMapping() {
     return {
-        '39': 'RIGHT',
-        '37': 'LEFT',
-        '38': 'UP',
-        '40': 'DOWN',
-        '84': 'T',
-        '27': 'ESC',
-        '66': 'B'
+        '39': 'RIGHT', '37': 'LEFT', '38': 'UP', '40': 'DOWN',
+        '84': 'T', '27': 'ESC', '66': 'B'
     };
 }
 
