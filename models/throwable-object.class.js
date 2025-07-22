@@ -57,11 +57,8 @@ class ThrowableObjects extends MovableObject {
     throw() {
         this.speedY = 30;
         this.applyGravity();
-        
         const animationInterval = this.setupAnimationInterval();
         const collisionInterval = this.setupCollisionInterval();
-        
-        // Store intervals for cleanup
         this.intervals = { animationInterval, collisionInterval };
     }
     

@@ -206,21 +206,35 @@ class Endboss extends MovableObject {
      */
     setupAnimationInterval() {
         setInterval(() => {
-            if (this.isHurt()) {
-                this.playHurtAnimation();
-            } else if (this.isJumping && !this.isDead()) {
-                this.playAnimation(this.IMAGES_JUMP);
-            } else if (this.isConcentrating && !this.isDead()) {
-                this.playAnimation(this.IMAGES_CONCENTRATION);
-            } else if (this.firstContact && !this.isDead()) {
-                this.playAnimation(this.IMAGES_FIGHT);
-                this.moveAndAttack();
-            } else if (!this.firstContact) {
-                this.playAnimation(this.IMAGES_IDLE);
-            } else if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD);
-            }
+            this.handleAnimationState();
         }, 200);
+    }
+
+    /**
+     * Handles the current animation state based on boss conditions
+     */
+    handleAnimationState() {
+        if (this.isHurt()) {
+            this.playHurtAnimation();
+        } else if (this.isJumping && !this.isDead()) {
+            this.playAnimation(this.IMAGES_JUMP);
+        } else if (this.isConcentrating && !this.isDead()) {
+            this.playAnimation(this.IMAGES_CONCENTRATION);
+        } else if (this.firstContact && !this.isDead()) {
+            this.handleFightOrIdleAnimation();
+        } else if (!this.firstContact) {
+            this.playAnimation(this.IMAGES_IDLE);
+        } else if (this.isDead()) {
+            this.playAnimation(this.IMAGES_DEAD);
+        }
+    }
+
+    /**
+     * Handles fight animation and movement
+     */
+    handleFightOrIdleAnimation() {
+        this.playAnimation(this.IMAGES_FIGHT);
+        this.moveAndAttack();
     }
 
     /**
@@ -237,25 +251,42 @@ class Endboss extends MovableObject {
      * Sets up cooldown timer interval
      */
     setupCooldownInterval() {
-        setInterval(() => {
-            if (this.jumpCooldown > 0) {
-                this.jumpCooldown--;
-            }
-            if (this.concentrationCooldown > 0) {
-                this.concentrationCooldown--;
-            }
-        }, 1000);
+        setInterval(() => this.updateCooldowns(), 1000);
     }
 
     /**
-     * Handles boss movement and attack pattern selection
+     * Updates jump and concentration cooldowns
+     */
+    updateCooldowns() {
+        if (this.jumpCooldown > 0) {
+            this.jumpCooldown--;
+        }
+        if (this.concentrationCooldown > 0) {
+            this.concentrationCooldown--;
+        }
+    }
+
+    /**
+     * Handles boss movement and attack selection
      */
     moveAndAttack() {
         this.x -= 10;
+        this.tryJumpAttack();
+        this.tryConcentrationAttack();
+    }
+    /**
+     * Checks and triggers a jump attack
+     */
+    tryJumpAttack() {
         if (this.jumpCooldown === 0 && !this.isJumping && this.firstContact) {
             this.performJumpAttack();
         }
-        
+    }
+
+    /**
+     * Checks and triggers a concentration attack
+     */
+    tryConcentrationAttack() {
         if (this.concentrationCooldown === 0 && !this.isConcentrating && !this.isJumping && this.firstContact) {
             this.concentrateAndSpawnChicken();
         }
@@ -271,7 +302,13 @@ class Endboss extends MovableObject {
             this.jumpAttackSound.play();
         }
         this.jump();
-        
+        this.startJumpMovement();
+    }
+    
+    /**
+     * Handles jump movement interval
+     */
+    startJumpMovement() {
         let jumpInterval = setInterval(() => {
             if (this.isAboveGround()) {
                 this.x -= 25;
@@ -307,11 +344,19 @@ class Endboss extends MovableObject {
     spawnBabyChickens() {
         if (this.world && !this.isDead()) {
             const numChickens = 2 + Math.floor(Math.random() * 3);
-            for (let i = 0; i < numChickens; i++) {
-                this.createBabyChicken();
-            }
+            this.spawnMultipleBabyChickens(numChickens);
         }
         this.isConcentrating = false;
+    }
+
+    /**
+     * Spawns multiple baby chickens
+     * @param {number} count
+     */
+    spawnMultipleBabyChickens(count) {
+        for (let i = 0; i < count; i++) {
+            this.createBabyChicken();
+        }
     }
 
     /**

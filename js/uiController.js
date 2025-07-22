@@ -53,7 +53,7 @@ function startGame() {
 function fullscreenchanged() {
   if (document.fullscreenElement == null) {
     closeFullCanvas();
-    closeFullNav();
+    updateNavStyling(false);
     fullscreenMode = false;
   }
 }
@@ -106,31 +106,32 @@ function isTabletDevice() {
 }
 
 /**
- * Toggles the visibility of the controls instructions panel
+ * Toggles the visibility of control instructions
+ * @param {string} elementId - ID of the element to toggle
  */
-function toggleControlsInstructions() {
-  let controlMenu = document.getElementById('game-controls-instructions');
+function toggleControlVisibility(elementId) {
+  let element = document.getElementById(elementId);
   if (!control) {
-    controlMenu.classList.remove('d-none');
+    element.classList.remove('d-none');
     control = true;
   } else {
-    controlMenu.classList.add('d-none');
+    element.classList.add('d-none');
     control = false;
   }
 }
 
 /**
- * Toggles the visibility of the control instructions
+ * Toggles the controls instructions panel
+ */
+function toggleControlsInstructions() {
+  toggleControlVisibility('game-controls-instructions');
+}
+
+/**
+ * Toggles the control instructions
  */
 function showControl() {
-  let controlInstructions = document.getElementById('controller-exp');
-  if (!control) {
-    controlInstructions.classList.remove('d-none');
-    control = true;
-  } else {
-    controlInstructions.classList.add('d-none');
-    control = false;
-  }
+  toggleControlVisibility('controller-exp');
 }
 
 /**
@@ -139,18 +140,33 @@ function showControl() {
 function setFullscreen() {
   let fullscreenCont = document.getElementById('canvas-cont');
   if (!fullscreenMode) {
-    enterFullscreen(fullscreenCont);
-    showCanvasinFull();
-    showNavinFull();
-    updateGameOverScreensForFullscreen(true);
-    fullscreenMode = true;
+    enableFullscreen(fullscreenCont);
   } else {
-    exitFullscreen();
-    closeFullCanvas();
-    closeFullNav();
-    updateGameOverScreensForFullscreen(false);
-    fullscreenMode = false;
+    disableFullscreen();
   }
+}
+
+/**
+ * Enables fullscreen mode and updates UI
+ * @param {HTMLElement} fullscreenCont - The container element
+ */
+function enableFullscreen(fullscreenCont) {
+  enterFullscreen(fullscreenCont);
+  showCanvasinFull();
+  updateNavStyling(true);
+  updateGameOverScreensForFullscreen(true);
+  fullscreenMode = true;
+}
+
+/**
+ * Disables fullscreen mode and resets UI
+ */
+function disableFullscreen() {
+  exitFullscreen();
+  closeFullCanvas();
+  updateNavStyling(false);
+  updateGameOverScreensForFullscreen(false);
+  fullscreenMode = false;
 }
 
 /**
@@ -177,7 +193,16 @@ function closeFullCanvas() {
   let canvas = document.getElementById('canvas');
   let canvasCont = document.getElementById('canvas-cont');
   let headline = document.getElementById('headline');
+  setCanvasContainerSize(canvasCont);
+  canvas.style.height = '480px';
+  headline.classList.remove('d-none');
+}
 
+/**
+ * Sets the appropriate canvas container size based on screen height
+ * @param {HTMLElement} canvasCont - The canvas container element
+ */
+function setCanvasContainerSize(canvasCont) {
   if (screen.height < 480) {
     canvasCont.style.maxWidth = '560px';
     canvasCont.style.maxHeight = '400px';
@@ -185,30 +210,25 @@ function closeFullCanvas() {
     canvasCont.style.maxWidth = '720px';
     canvasCont.style.maxHeight = '480px';
   }
-  canvas.style.height = '480px';
-  headline.classList.remove('d-none');
 }
 
 /**
  * Updates navigation styling for fullscreen mode
+ * @param {boolean} isFullscreen - Whether to apply fullscreen styling
  */
-function showNavinFull() {
+function updateNavStyling(isFullscreen) {
   let gameNav = document.getElementById('game-nav');
-  gameNav.style.position = 'absolute';
-  gameNav.style.top = '10px';
-  gameNav.style.left = '10px';
-  gameNav.style.right = '10px';
-}
-
-/**
- * Reverts navigation styling when exiting fullscreen mode
- */
-function closeFullNav() {
-  let gameNav = document.getElementById('game-nav');
-  gameNav.style.position = 'unset';
-  gameNav.style.top = 'unset';
-  gameNav.style.left = 'unset';
-  gameNav.style.right = 'unset';
+  if (isFullscreen) {
+    gameNav.style.position = 'absolute';
+    gameNav.style.top = '10px';
+    gameNav.style.left = '10px';
+    gameNav.style.right = '10px';
+  } else {
+    gameNav.style.position = 'unset';
+    gameNav.style.top = 'unset';
+    gameNav.style.left = 'unset';
+    gameNav.style.right = 'unset';
+  }
 }
 
 /**
@@ -265,76 +285,71 @@ function clearAllIntervals() {
  */
 function resetGameWorld() {
   if (window.world) {
-    resetCharacterState();
-    resetStatusBars();
-    clearWorldCanvas();
+    window.world.character.coins = 0;
+    window.world.character.bottles = 0;
+    window.world.statusBarHealth.setPercentageHealth(100);
+    window.world.statusBarBottle.setPercentageBottle(0);
+    window.world.statusBarCoin.setPercentageCoin(0);
+    window.world.statusBarEndboss.setPercentageEndboss(100);
+    window.world.statusBarEndboss.visible = false;
+    window.world.bottleNotificationShown = false;
+    window.world.ctx.clearRect(0, 0, window.world.canvas.width, window.world.canvas.height);
   }
 }
 
 /**
- * Resets the character state (coins, bottles)
- */
-function resetCharacterState() {
-  window.world.character.coins = 0;
-  window.world.character.bottles = 0;
-}
-
-/**
- * Resets all status bars to their initial values
- */
-function resetStatusBars() {
-  window.world.statusBarHealth.setPercentageHealth(100);
-  window.world.statusBarBottle.setPercentageBottle(0);
-  window.world.statusBarCoin.setPercentageCoin(0);
-  window.world.statusBarEndboss.setPercentageEndboss(100);
-  window.world.statusBarEndboss.visible = false;
-}
-
-/**
- * Clears the game canvas and resets bottle notification
- */
-function clearWorldCanvas() {
-  window.world.bottleNotificationShown = false;
-  window.world.ctx.clearRect(0, 0, window.world.canvas.width, window.world.canvas.height);
-}
-
-/**
  * Restarts the game after a game over
- * Resets all game state variables and hides game over screens
  */
 function restartGame() {
+  handleGameNavigation(false);
+}
+
+/**
+ * Returns to the main menu from the game
+ */
+function backToMainMenu() {
+  handleGameNavigation(true);
+}
+
+/**
+ * Handles game restart and menu navigation
+ * @param {boolean} returnToMenu - If true, returns to main menu; if false, restarts game
+ */
+function handleGameNavigation(returnToMenu) {
   hideGameScreens();
-  resetGameState();
-  startNewGame();
+  gameStarted = false;
+  window.gameStarted = false;
+  clearAllIntervals();
+  resetGameWorld();
+  stopMusic();
+  if (returnToMenu) {
+    document.getElementById('first-screen').classList.remove('d-none');
+    hideGameElements();
+  } else {
+    initLevel();
+    init();
+    startGame();
+  }
 }
 
 /**
  * Hides game over screens and notifications
  */
 function hideGameScreens() {
-  document.getElementById('gameOverScreenLost').style.display = "none";
-  document.getElementById('gameOverScreenWin').style.display = "none";
+  const elements = ['gameOverScreenLost', 'gameOverScreenWin'];
+  elements.forEach(id => {
+    document.getElementById(id).style.display = "none";
+  });
   document.getElementById('bottleNotification').classList.add('d-none');
 }
 
 /**
- * Resets the game state
+ * Hides all game-related UI elements
  */
-function resetGameState() {
-  gameStarted = false;
-  window.gameStarted = false;
-  clearAllIntervals();
-  resetGameWorld();
-  stopMusic();
-}
-
-/**
- * Initializes and starts a new game
- */
-function startNewGame() {
-  initLevel();
-  init();
-  startGame();
+function hideGameElements() {
+  document.getElementById('canvas').classList.add('d-none');
+  hideGameScreens();
+  document.getElementById('game-nav').classList.add('d-none');
 }
 
 /**
@@ -345,47 +360,7 @@ function hideBottleNotification() {
   if (bottleNotification) {
     bottleNotification.classList.add('d-none');
   }
-  
   if (window.world && window.world.bottleNotificationShown) {
     window.world.bottleNotificationShown = false;
   }
-}
-
-/**
- * Returns to the main menu from the game
- * Resets game state and shows the start screen
- */
-function backToMainMenu() {
-  hideGameElements();
-  showStartScreen();
-  resetGameData();
-}
-
-/**
- * Hides all game-related UI elements
- */
-function hideGameElements() {
-  document.getElementById('canvas').classList.add('d-none');
-  document.getElementById('gameOverScreenLost').style.display = "none";
-  document.getElementById('gameOverScreenWin').style.display = "none";
-  document.getElementById('game-nav').classList.add('d-none');
-  document.getElementById('bottleNotification').classList.add('d-none');
-}
-
-/**
- * Shows the start screen
- */
-function showStartScreen() {
-  document.getElementById('first-screen').classList.remove('d-none');
-}
-
-/**
- * Resets all game data and stops music
- */
-function resetGameData() {
-  gameStarted = false;
-  window.gameStarted = false;
-  clearAllIntervals();
-  resetGameWorld();
-  stopMusic();
 }

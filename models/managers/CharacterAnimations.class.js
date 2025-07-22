@@ -64,19 +64,30 @@ class CharacterAnimations {
      * Handles jump animations
      */
     animateJump() {
-        setInterval(() => {
-            if (this.character.isAboveGround()) {
-                if (this.isRising && !this.jumpUpInterval) {
-                    this.startJumpUpAnimation();
-                } else if (!this.isRising && !this.jumpDownInterval) {
-                    this.startJumpDownAnimation();
-                }
-            } else {
-                this.clearJumpAnimations();
-            }
+        setInterval(() => this.handleJumpAnimation(), 20);
+    }
 
-            this.updateJumpState(this.character.speedY);
-        }, 20);
+    /**
+     * Manages jump animation state
+     */
+    handleJumpAnimation() {
+        if (this.character.isAboveGround()) {
+            this.triggerJumpAnimation();
+        } else {
+            this.clearJumpAnimations();
+        }
+        this.updateJumpState(this.character.speedY);
+    }
+
+    /**
+     * Triggers the correct jump animation (up or down)
+     */
+    triggerJumpAnimation() {
+        if (this.isRising && !this.jumpUpInterval) {
+            this.startJumpUpAnimation();
+        } else if (!this.isRising && !this.jumpDownInterval) {
+            this.startJumpDownAnimation();
+        }
     }
 
     /**
@@ -110,14 +121,20 @@ class CharacterAnimations {
      * Clears jump animations
      */
     clearJumpAnimations() {
-        if (this.jumpUpInterval) {
-            clearInterval(this.jumpUpInterval);
-            this.jumpUpInterval = null;
+        this.jumpUpInterval = this.clearIntervalAndNullify(this.jumpUpInterval);
+        this.jumpDownInterval = this.clearIntervalAndNullify(this.jumpDownInterval);
+    }
+
+    /**
+     * Clears an interval and sets it to null
+     * @param {number|null} intervalId 
+     * @returns {null}
+     */
+    clearIntervalAndNullify(intervalId) {
+        if (intervalId) {
+            clearInterval(intervalId);
         }
-        if (this.jumpDownInterval) {
-            clearInterval(this.jumpDownInterval);
-            this.jumpDownInterval = null;
-        }
+        return null;
     }
 
     /**
@@ -190,16 +207,19 @@ class CharacterAnimations {
         if (this.character.isDead()) {
             this.character.playAnimation(this.character.IMAGES_ISDEAD);
         } else if (this.character.isHurt()) {
-            this.character.playAnimation(this.character.IMAGES_HURT);
-            if (window.SOUNDS_ENABLED) {
-                this.character.gethit_sound.play();
-            }
-        } else if (this.character.isAboveGround()) {
-            // Jump animation handled by separate method
-        } else {
-            if (this.moveToSide()) {
-                this.character.playAnimation(this.character.IMAGES_WALKING);
-            }
+            this.handleHurtAnimation();
+        } else if (this.moveToSide() && !this.character.isAboveGround()) {
+            this.character.playAnimation(this.character.IMAGES_WALKING);
+        }
+    }
+
+    /**
+     * Handles hurt animation and sound
+     */
+    handleHurtAnimation() {
+        this.character.playAnimation(this.character.IMAGES_HURT);
+        if (window.SOUNDS_ENABLED) {
+            this.character.gethit_sound.play();
         }
     }
 

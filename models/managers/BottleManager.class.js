@@ -46,21 +46,34 @@ class BottleManager {
         for (let i = this.world.throwableObject.length - 1; i >= 0; i--) {
             const bottle = this.world.throwableObject[i];
             const hitEnemy = this.findCollidingEnemy(bottle);
-            
             if (hitEnemy && !bottle.hasHit) {
-                // Apply damage to enemy and trigger bottle explosion
-                this.damageEnemy(hitEnemy, bottle);
-                bottle.explode();
-                
-                // Remove bottle from array after a short delay to allow animation to play
-                setTimeout(() => {
-                    const index = this.world.throwableObject.indexOf(bottle);
-                    if (index !== -1) {
-                        this.world.throwableObject.splice(index, 1);
-                    }
-                }, 300); // Short delay for explosion animation
+                this.processBottleHit(bottle, hitEnemy);
             }
         }
+    }
+
+    /**
+     * Processes a bottle hitting an enemy
+     * @param {ThrowableObjects} bottle - The bottle that hit
+     * @param {MovableObject} hitEnemy - The enemy that was hit
+     */
+    processBottleHit(bottle, hitEnemy) {
+        this.damageEnemy(hitEnemy, bottle);
+        bottle.explode();
+        this.scheduleBottleRemoval(bottle);
+    }
+
+    /**
+     * Schedules bottle removal after explosion animation
+     * @param {ThrowableObjects} bottle - The bottle to remove
+     */
+    scheduleBottleRemoval(bottle) {
+        setTimeout(() => {
+            const index = this.world.throwableObject.indexOf(bottle);
+            if (index !== -1) {
+                this.world.throwableObject.splice(index, 1);
+            }
+        }, 300);
     }
     
     /**

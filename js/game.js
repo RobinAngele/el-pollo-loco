@@ -64,10 +64,19 @@ function setupTouchButton(buttonId, keyProperty) {
 }
 
 /**
- * Sets up keyboard controls with event listeners
+ * Sets up keyboard event listeners for game controls
  */
 function setupKeyboardControls() {
-    const keyMap = {
+    const keyMap = getKeyMapping();
+    addKeyEventListeners(keyMap);
+}
+
+/**
+ * Returns the key code to action mapping
+ * @returns {object} Key code mapping
+ */
+function getKeyMapping() {
+    return {
         '39': 'RIGHT',
         '37': 'LEFT',
         '38': 'UP',
@@ -76,13 +85,18 @@ function setupKeyboardControls() {
         '27': 'ESC',
         '66': 'B'
     };
+}
 
+/**
+ * Adds keydown and keyup event listeners
+ * @param {object} keyMap - Key code mapping
+ */
+function addKeyEventListeners(keyMap) {
     window.addEventListener("keydown", (e) => {
         if (keyMap[e.keyCode]) {
             keyboard[keyMap[e.keyCode]] = true;
         }
     });
-
     window.addEventListener("keyup", (e) => {
         if (keyMap[e.keyCode]) {
             keyboard[keyMap[e.keyCode]] = false;

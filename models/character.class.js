@@ -166,6 +166,15 @@ class Character extends MovableObject {
      */
     constructor() {
         super().loadImage('img/2_character_pepe/2_walk/W-21.png');
+        this.loadAllImages();
+        this.initializeManagers();
+        this.animations.animateJump();
+    }
+
+    /**
+     * Loads all character image sets
+     */
+    loadAllImages() {
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING_UP);
         this.loadImages(this.IMAGES_JUMPING_DOWN);
@@ -173,15 +182,16 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_ISDEAD);
         this.loadImages(this.IMAGES_IDLE);
         this.loadImages(this.IMAGES_LONGIDLE);
-        
-        // Create manager components
+    }
+
+    /**
+     * Initializes manager components
+     */
+    initializeManagers() {
         this.animations = new CharacterAnimations(this);
         this.state = new CharacterState(this);
         this.movement = new CharacterMovement(this);
-        
-        // Initialize animations
-        this.animations.animateJump();
-    };
+    }
 
     /**
      * Offset values for collision detection
