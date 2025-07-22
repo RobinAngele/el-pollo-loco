@@ -252,7 +252,6 @@ class Endboss extends MovableObject {
      */
     moveAndAttack() {
         this.x -= 10;
-        
         if (this.jumpCooldown === 0 && !this.isJumping && this.firstContact) {
             this.performJumpAttack();
         }
