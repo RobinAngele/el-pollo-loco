@@ -86,9 +86,9 @@ function showResponsiveBtn() {
  */
 function shouldShowMobileControls() {
     return gameStarted && (
-    window.innerHeight < 480 || 
-    window.innerWidth <= 1024 || 
-    isTabletDevice()
+        window.innerHeight < 480 || 
+        window.innerWidth <= 1024 || 
+        isTabletDevice()
     );
 }
 
@@ -110,11 +110,11 @@ function isTabletDevice() {
 function toggleControlVisibility(elementId) {
     let element = document.getElementById(elementId);
     if (!control) {
-    element.classList.remove('d-none');
-    control = true;
+        element.classList.remove('d-none');
+        control = true;
     } else {
-    element.classList.add('d-none');
-    control = false;
+        element.classList.add('d-none');
+        control = false;
     }
 }
 
@@ -138,9 +138,9 @@ function showControl() {
 function setFullscreen() {
     let fullscreenCont = document.getElementById('canvas-cont');
     if (!fullscreenMode) {
-    enableFullscreen(fullscreenCont);
+        enableFullscreen(fullscreenCont);
     } else {
-    disableFullscreen();
+        disableFullscreen();
     }
 }
 
@@ -174,12 +174,17 @@ function disableFullscreen() {
 function updateGameOverScreensForFullscreen(isFullscreen) {
     const gameOverScreenLost = document.getElementById('gameOverScreenLost');
     const gameOverScreenWin = document.getElementById('gameOverScreenWin');
-    if (isFullscreen) {
-    gameOverScreenLost.classList.add('fullscreen-overlay');
-    gameOverScreenWin.classList.add('fullscreen-overlay');
+    
+    if (isFullscreen && gameOverScreenLost.style.display === 'flex') {
+        gameOverScreenLost.classList.add('fullscreen-overlay');
     } else {
-    gameOverScreenLost.classList.remove('fullscreen-overlay');
-    gameOverScreenWin.classList.remove('fullscreen-overlay');
+        gameOverScreenLost.classList.remove('fullscreen-overlay');
+    }
+    
+    if (isFullscreen && gameOverScreenWin.style.display === 'flex') {
+        gameOverScreenWin.classList.add('fullscreen-overlay');
+    } else {
+        gameOverScreenWin.classList.remove('fullscreen-overlay');
     }
 }
 
@@ -201,11 +206,11 @@ function closeFullCanvas() {
  */
 function setCanvasContainerSize(canvasCont) {
     if (screen.height < 480) {
-    canvasCont.style.maxWidth = '560px';
-    canvasCont.style.maxHeight = '400px';
+        canvasCont.style.maxWidth = '560px';
+        canvasCont.style.maxHeight = '400px';
     } else {
-    canvasCont.style.maxWidth = '720px';
-    canvasCont.style.maxHeight = '480px';
+        canvasCont.style.maxWidth = '720px';
+        canvasCont.style.maxHeight = '480px';
     }
 }
 
@@ -216,15 +221,15 @@ function setCanvasContainerSize(canvasCont) {
 function updateNavStyling(isFullscreen) {
     let gameNav = document.getElementById('game-nav');
     if (isFullscreen) {
-    gameNav.style.position = 'absolute';
-    gameNav.style.top = '10px';
-    gameNav.style.left = '10px';
-    gameNav.style.right = '10px';
+        gameNav.style.position = 'absolute';
+        gameNav.style.top = '10px';
+        gameNav.style.left = '10px';
+        gameNav.style.right = '10px';
     } else {
-    gameNav.style.position = 'unset';
-    gameNav.style.top = 'unset';
-    gameNav.style.left = 'unset';
-    gameNav.style.right = 'unset';
+        gameNav.style.position = 'unset';
+        gameNav.style.top = 'unset';
+        gameNav.style.left = 'unset';
+        gameNav.style.right = 'unset';
     }
 }
 
@@ -248,11 +253,11 @@ function showCanvasinFull() {
  */
 function enterFullscreen(element) {
     if (element.requestFullscreen) {
-    element.requestFullscreen();
+        element.requestFullscreen();
     } else if (element.msRequestFullscreen) {
-    element.msRequestFullscreen();
+        element.msRequestFullscreen();
     } else if (element.webkitRequestFullscreen) {
-    element.webkitRequestFullscreen();
+        element.webkitRequestFullscreen();
     }
 }
 
@@ -261,9 +266,9 @@ function enterFullscreen(element) {
  */
 function exitFullscreen() {
     if (document.exitFullscreen) {
-    document.exitFullscreen();
+        document.exitFullscreen();
     } else if (document.webkitExitFullscreen) {
-    document.webkitExitFullscreen();
+        document.webkitExitFullscreen();
     }
 }
 
@@ -272,7 +277,7 @@ function exitFullscreen() {
  */
 function clearAllIntervals() {
     for (let i = 1; i < 9999; i++) {
-    window.clearInterval(i);
+        window.clearInterval(i);
     }
 }
 
@@ -281,15 +286,15 @@ function clearAllIntervals() {
  */
 function resetGameWorld() {
     if (window.world) {
-    window.world.character.coins = 0;
-    window.world.character.bottles = 0;
-    window.world.statusBarHealth.setPercentageHealth(100);
-    window.world.statusBarBottle.setPercentageBottle(0);
-    window.world.statusBarCoin.setPercentageCoin(0);
-    window.world.statusBarEndboss.setPercentageEndboss(100);
-    window.world.statusBarEndboss.visible = false;
-    window.world.bottleNotificationShown = false;
-    window.world.ctx.clearRect(0, 0, window.world.canvas.width, window.world.canvas.height);
+        window.world.character.coins = 0;
+        window.world.character.bottles = 0;
+        window.world.statusBarHealth.setPercentageHealth(100);
+        window.world.statusBarBottle.setPercentageBottle(0);
+        window.world.statusBarCoin.setPercentageCoin(0);
+        window.world.statusBarEndboss.setPercentageEndboss(100);
+        window.world.statusBarEndboss.visible = false;
+        window.world.bottleNotificationShown = false;
+        window.world.ctx.clearRect(0, 0, window.world.canvas.width, window.world.canvas.height);
     }
 }
 
@@ -314,9 +319,9 @@ function backToMainMenu() {
 function handleGameNavigation(returnToMenu) {
     resetGameState();
     if (returnToMenu) {
-    showMainMenu();
+        showMainMenu();
     } else {
-    restartGameSession();
+        restartGameSession();
     }
 }
 
@@ -355,7 +360,7 @@ function restartGameSession() {
 function hideGameScreens() {
     const elements = ['gameOverScreenLost', 'gameOverScreenWin'];
     elements.forEach(id => {
-    document.getElementById(id).style.display = "none";
+        document.getElementById(id).style.display = "none";
     });
     document.getElementById('bottleNotification').classList.add('d-none');
 }
@@ -375,9 +380,9 @@ function hideGameElements() {
 function hideBottleNotification() {
     const bottleNotification = document.getElementById('bottleNotification');
     if (bottleNotification) {
-    bottleNotification.classList.add('d-none');
+        bottleNotification.classList.add('d-none');
     }
     if (window.world && window.world.bottleNotificationShown) {
-    window.world.bottleNotificationShown = false;
+        window.world.bottleNotificationShown = false;
     }
 }

@@ -8,9 +8,9 @@ class Character extends MovableObject {
     height = 250;
     width = 100;
     /**
-     * Image paths for walking animation
-     * @type {string[]}
-     */
+    * Image paths for walking animation
+    * @type {string[]}
+    */
     IMAGES_WALKING = [
         'img/2_character_pepe/2_walk/W-21.png',
         'img/2_character_pepe/2_walk/W-22.png',
@@ -21,9 +21,9 @@ class Character extends MovableObject {
     ];
 
     /**
-     * Image paths for jumping up animation
-     * @type {string[]}
-     */
+    * Image paths for jumping up animation
+    * @type {string[]}
+    */
     IMAGES_JUMPING_UP = [
         'img/2_character_pepe/3_jump/J-31.png',
         'img/2_character_pepe/3_jump/J-32.png',
@@ -32,9 +32,9 @@ class Character extends MovableObject {
     ];
 
     /**
-     * Image paths for jumping down animation
-     * @type {string[]}
-     */
+    * Image paths for jumping down animation
+    * @type {string[]}
+    */
     IMAGES_JUMPING_DOWN = [
         'img/2_character_pepe/3_jump/J-35.png',
         'img/2_character_pepe/3_jump/J-36.png',
@@ -44,9 +44,9 @@ class Character extends MovableObject {
     ];
 
     /**
-     * Image paths for hurt animation
-     * @type {string[]}
-     */
+    * Image paths for hurt animation
+    * @type {string[]}
+    */
     IMAGES_HURT = [
         'img/2_character_pepe/4_hurt/H-41.png',
         'img/2_character_pepe/4_hurt/H-42.png',
@@ -54,9 +54,9 @@ class Character extends MovableObject {
     ];
 
     /**
-     * Image paths for dead animation
-     * @type {string[]}
-     */
+    * Image paths for dead animation
+    * @type {string[]}
+    */
     IMAGES_ISDEAD = [
         'img/2_character_pepe/5_dead/D-51.png',
         'img/2_character_pepe/5_dead/D-52.png',
@@ -68,9 +68,9 @@ class Character extends MovableObject {
     ];
 
     /**
-     * Image paths for idle animation
-     * @type {string[]}
-     */
+    * Image paths for idle animation
+    * @type {string[]}
+    */
     IMAGES_IDLE = [
         'img/2_character_pepe/1_idle/idle/I-1.png',
         'img/2_character_pepe/1_idle/idle/I-2.png',
@@ -85,9 +85,9 @@ class Character extends MovableObject {
     ];
 
     /**
-     * Image paths for long idle animation
-     * @type {string[]}
-     */
+    * Image paths for long idle animation
+    * @type {string[]}
+    */
     IMAGES_LONGIDLE = [
         'img/2_character_pepe/1_idle/long_idle/I-11.png',
         'img/2_character_pepe/1_idle/long_idle/I-12.png',
@@ -102,68 +102,68 @@ class Character extends MovableObject {
     ];
 
     /**
-     * Number of coins collected by the character
-     * @type {number}
-     */
+    * Number of coins collected by the character
+    * @type {number}
+    */
     coins = 0;
 
     /**
-     * Number of bottles collected by the character
-     * @type {number}
-     */
+    * Number of bottles collected by the character
+    * @type {number}
+    */
     bottles = 0;
 
     /**
-     * Cooldown time for bottle usage
-     * @type {number}
-     */
+    * Cooldown time for bottle usage
+    * @type {number}
+    */
     bottleCooldown = 0;
 
     /**
-     * Maximum cooldown time for bottle usage
-     * @type {number}
-     */
+    * Maximum cooldown time for bottle usage
+    * @type {number}
+    */
     bottleCooldownTime = 1000;
 
     /**
-     * Reference to the game world
-     * @type {object}
-     */
+    * Reference to the game world
+    * @type {object}
+    */
     world;
 
     /**
-     * Timer for idle state
-     * @type {number}
-     */
+    * Timer for idle state
+    * @type {number}
+    */
     idleTimer = 0;
 
     /**
-     * Sound effect for getting hit
-     * @type {Audio}
-     */
+    * Sound effect for getting hit
+    * @type {Audio}
+    */
     gethit_sound = new Audio('audio/hit.wav');
 
     /**
-     * Character animations manager
-     * @type {CharacterAnimations}
-     */
+    * Character animations manager
+    * @type {CharacterAnimations}
+    */
     animations;
 
     /**
-     * Character state manager
-     * @type {CharacterState}
-     */
+    * Character state manager
+    * @type {CharacterState}
+    */
     state;
 
     /**
-     * Character movement manager
-     * @type {CharacterMovement}
-     */
+    * Character movement manager
+    * @type {CharacterMovement}
+    */
     movement;
 
     /**
-     * Constructor for the Character class
-     */
+    * Constructor for the Character class
+    */
     constructor() {
         super().loadImage('img/2_character_pepe/2_walk/W-21.png');
         this.loadAllImages();
@@ -172,8 +172,8 @@ class Character extends MovableObject {
     }
 
     /**
-     * Loads all character image sets
-     */
+    * Loads all character image sets
+    */
     loadAllImages() {
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING_UP);
@@ -185,8 +185,8 @@ class Character extends MovableObject {
     }
 
     /**
-     * Initializes manager components
-     */
+    * Initializes manager components
+    */
     initializeManagers() {
         this.animations = new CharacterAnimations(this);
         this.state = new CharacterState(this);
@@ -194,9 +194,9 @@ class Character extends MovableObject {
     }
 
     /**
-     * Offset values for collision detection
-     * @type {object}
-     */
+    * Offset values for collision detection
+    * @type {object}
+    */
     offset = {
         top: 125,
         bottom: 0,
