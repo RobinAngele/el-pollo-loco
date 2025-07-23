@@ -218,8 +218,7 @@ nav {
     object-fit: contain;
 }
 
-/* Fullscreen game over overlay styles */
-.fullscreen-overlay {
+.game-over-screen-cont.fullscreen-overlay {
     position: fixed !important;
     top: 0;
     left: 0;
@@ -227,19 +226,18 @@ nav {
     height: 100vh !important;
     z-index: 10000;
     background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.fullscreen-overlay img {
+.game-over-screen-cont.fullscreen-overlay img {
     max-height: 90vh;
     max-width: 90vw;
     width: auto;
     height: auto;
 }
 
-.fullscreen-overlay .game-over-buttons {
+.game-over-screen-cont.fullscreen-overlay .game-over-buttons {
     position: absolute;
     bottom: 10%;
     display: flex;

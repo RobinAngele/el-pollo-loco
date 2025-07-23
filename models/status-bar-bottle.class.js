@@ -25,7 +25,7 @@ class StatusBarBottle extends DrawableObjects{
     /**
      * Constructor for bottle status bar
      */
-    constructor(){
+    constructor() {
         super();
         this.loadImages(this.IMAGES_BOTTLE);
         this.setPercentageBottle(0);

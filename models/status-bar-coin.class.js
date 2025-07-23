@@ -25,7 +25,7 @@ class StatusBarCoin extends DrawableObjects{
     /**
      * Constructor for coin status bar
      */
-    constructor(){
+    constructor() {
         super().loadImages(this.IMAGES_COINS);
         this.setPercentageCoin(0);
         this.x = 50;
